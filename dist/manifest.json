@@ -10,7 +10,6 @@
     },  
     "action": {
         "default_icon": "image/icon128.png",
-        "default_popup": "popup.html",
         "default_title": "ダメージ計算"
     },
     "content_scripts": [{

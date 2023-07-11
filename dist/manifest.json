@@ -1,0 +1,25 @@
+{
+    "name": "拡張チャットパレット",
+    "description": "1つのチャットパレット画面で複数キャラのメッセージテンプレートを管理できます。",
+    "version": "1.03",
+    "manifest_version": 3,
+    "icons": {
+        "16": "image/icon16.png",
+        "48": "image/icon48.png",
+        "128": "image/icon128.png"
+    },  
+    "permissions": [ 
+        "storage"
+    ],
+    "action": {
+        "default_icon": "image/icon128.png",
+        "default_title": "拡張チャットパレット",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [{
+        "matches": ["https://ccfolia.com/rooms/*"],
+        "js": ["app.js"],
+        "css": ["app.css"],
+        "run_at": "document_idle"
+    }]
+}

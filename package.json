@@ -26,6 +26,7 @@
     "workbox-webpack-plugin": "^7.0.0"
   },
   "dependencies": {
+    "@types/chrome": "^0.0.240",
     "@webpack-cli/generators": "^3.0.7"
   }
 }

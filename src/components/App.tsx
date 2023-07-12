@@ -2,6 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Button, FormControl, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
+import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
+
+// ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
+function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number){
+    let role: string = "";
+    let dialog: string = "";
+    let decrementParams: string[] = new Array;
+
+    // ダメージ入力をユーザーに求める
+    if(useShield){
+        dialog = `相手が出したダメージを入力してください。\n被ダメージ計算後、HPと${shieldType}の耐久力を減少させます。`;
+    }else{
+        dialog = `相手が出したダメージを入力してください。\n被ダメージ計算後、HPを減少させます。`;
+    }
+    const damage: string = window.prompt(dialog);
+
+    // ダメージ入力が不正な値の場合、処理をやめる
+    if((isNaN(Number(damage)) || (damage === "") || (damage === null))) return;
+
+    // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
+    if(useShield){
+        role = `C(((${damage})*${reductionRate}/100R)-({装甲}+{盾装甲})) 【盾ガード時被ダメージ】`;
+        decrementParams.push("HP");
+        decrementParams.push(shieldType);
+    }else{
+        role = `C(((${damage})*${reductionRate}/100R)-({装甲})) 【被ダメージ】`;
+        decrementParams.push("HP");
+    }
+
+    // ダメージを計算するロールを行い、その結果を元にパラメータを減少させるロールを行う
+    decrementParamsWithResult(role, decrementParams);
+}
 
 const theme = createTheme({
     palette: {
@@ -96,12 +128,24 @@ export default function App(){
                                         setRadioValue(event.target.value);
                                     }}
                                 >
-                                    <FormControlLabel value="shield1" control={<Radio />} label="盾1" />
-                                    <FormControlLabel value="shield2" control={<Radio />} label="盾2" />
+                                    <FormControlLabel value="盾" control={<Radio />} label="盾" checked />
+                                    <FormControlLabel value="盾2" control={<Radio />} label="盾2" />
                                 </RadioGroup>
                             </FormControl>
-                            <Button variant="text">計算(盾あり)</Button>
-                            <Button variant="text">計算(盾なし)</Button>
+                            <Button
+                                variant="text"
+                                onClick={()=>{
+                                    decrementHealth(true, radioValue, 100);
+                                }}>
+                                    計算(盾あり)
+                            </Button>
+                            <Button
+                                variant="text"
+                                onClick={()=>{
+                                    decrementHealth(false, "", 100);
+                                }}>
+                                    計算(盾なし)
+                            </Button>
                         </Paper>
                     </Draggable>
                 </ThemeProvider>

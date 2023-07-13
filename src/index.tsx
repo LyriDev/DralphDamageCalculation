@@ -7,7 +7,7 @@ function addPortalRoot(): HTMLDivElement{ // ポータルを追加するため�
     const portalRoot = document.createElement('div');
     portalRoot.id = 'portal-root-DamageCalculator';
     portalRoot.style.position = "relative";
-    portalRoot.style.zIndex = "1500";
+    portalRoot.style.zIndex = "1203";
     document.body.appendChild(portalRoot);
     return portalRoot;
 }

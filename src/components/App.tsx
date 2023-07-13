@@ -131,17 +131,8 @@ export default function App(){
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
     const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
 
-    const [width, setWidth] = useState<number>(320);
-    const [height, setHeight] = useState<number>(100);
-    const appRef = useRef(null);
-    useEffect(() => {
-        if(appRef && appRef.current){
-            const newWidth: number = appRef.current.width || 320;
-            const newHeight: number = appRef.current.Height || 100;
-            setWidth(newWidth);
-            setHeight(newHeight);
-        }
-    }, [appRef])
+    const width: number = 320;
+    const height: number = 157;
 
     const [radioValue, setRadioValue] = useState<string>("盾");
     const [sliderValue, setSliderValue] = useState<number>(0);
@@ -172,7 +163,6 @@ export default function App(){
             {isVisible && (
                 <ThemeProvider theme={theme}>
                     <Draggable
-                        ref={appRef}
                         defaultPosition={{
                             x: (windowWidth - width) / 2,
                             y: -(windowHeight + height) / 2
@@ -191,12 +181,16 @@ export default function App(){
                                 color: "#fff",
                                 backgroundColor: 'rgba(44, 44, 44, 0.87)',
                                 borderRadius: "0",
-                                minWidth: "320px",
-                                minHeight: "100px",
+                                minWidth: `${width}px`,
+                                minHeight: `${height}px`,
                             }}
                             elevation={10}
                         >
-                            <div>
+                            <div
+                                style={{
+                                    paddingTop: "1rem"
+                                }}
+                            >
                                 <Slider
                                     className="draggable-disable"
                                     style={{

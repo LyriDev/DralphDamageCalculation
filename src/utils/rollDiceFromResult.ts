@@ -32,6 +32,7 @@ export async function decrementParamsWithResult(role: string, params: string[]):
         const decrementRoll: string = getDecrementRoll(params[i], roleResult);
         changeMessage(decrementRoll);
         clickSubmitButton();
+        await new Promise((resolve) => setTimeout(resolve, 100));// 指定された時間だけ待機する
     }
 }
 

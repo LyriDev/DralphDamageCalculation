@@ -140,6 +140,8 @@ export default function App(){
     function handleKeyDown(event: KeyboardEvent){
         if (event.altKey && event.key === 'q') {
             setIsVisible((prev) => !prev);
+            setRadioValue("盾");
+            setSliderValue(0);
         }
     };
 

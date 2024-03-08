@@ -30,6 +30,7 @@ export async function decrementParamsWithResult(role: string, params: string[]):
     // 最初のロール結果を使用して、指定されたパラメータを減少させる
     for(let i: number = 0; i < params.length; i++){
         const decrementRoll: string = getDecrementRoll(params[i], roleResult);
+        console.log(decrementRoll)
         changeMessage(decrementRoll);
         clickSubmitButton();
         await new Promise((resolve) => setTimeout(resolve, 100));// 指定された時間だけ待機する
@@ -58,7 +59,7 @@ async function watchMessage(targetCharacterName: string, targetMessage: string):
                     const addedMessageDiv: HTMLElement = mutation.addedNodes[0] as HTMLElement;// メッセージが送信されて追加されたDiv要素を取得する
 
                     // キャラ名を取得する
-                    const characterNameElm: HTMLSpanElement | null = addedMessageDiv.querySelector("span"); // キャラ名の要素
+                    const characterNameElm: HTMLSpanElement | null = addedMessageDiv.querySelector("h6"); // キャラ名の要素
                     if(!characterNameElm) return;
                     const characterName = characterNameElm.textContent; // キャラ名
                     if(characterName !== targetCharacterName) return; // キャラ名が指定と異なる場合は、追加された要素に対する処理を終了する

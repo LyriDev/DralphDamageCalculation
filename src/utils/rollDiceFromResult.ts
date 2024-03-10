@@ -30,7 +30,6 @@ export async function decrementParamsWithResult(role: string, params: string[]):
     // 最初のロール結果を使用して、指定されたパラメータを減少させる
     for(let i: number = 0; i < params.length; i++){
         const decrementRoll: string = getDecrementRoll(params[i], roleResult);
-        console.log(decrementRoll)
         changeMessage(decrementRoll);
         clickSubmitButton();
         await new Promise((resolve) => setTimeout(resolve, 100));// 指定された時間だけ待機する

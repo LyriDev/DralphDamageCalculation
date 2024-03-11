@@ -1,4 +1,5 @@
 node_modules
 .vscode
-/dist/main.js
-/dist/service-worker.js
+dist/
+!dist/image/
+!dist/manifest.json

@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
 import AddPanelButton from "./AddPanelButton"
 import NumericField from "./NumericField"
+import { sendMessage } from '../utils/sendCcfoliaMessage';
 
 // ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
 function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number): void{
@@ -343,15 +344,16 @@ export default function App(){
                                                 className="draggable-disable"
                                                 variant="text"
                                                 onClick={()=>{
-                                                    
+                                                    sendMessage(":MP-1 【かばう消費MP】");
                                                 }}>
                                                     かばう+1
                                             </Button> 
                                             <Button
                                                 className="draggable-disable"
+                                                style={{marginLeft: "0.5rem"}}
                                                 variant="text"
                                                 onClick={()=>{
-                                                    
+                                                    sendMessage("CCB<=({盾技能}) 【盾】");
                                                 }}>
                                                     盾技能
                                             </Button> 

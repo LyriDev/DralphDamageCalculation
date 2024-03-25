@@ -8,10 +8,16 @@ import NumericField from "./NumericField"
 import { sendMessage } from '../utils/sendCcfoliaMessage';
 
 // ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
-function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number): void{
+function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number, enableMagicArmour: boolean, multiplier: string): void{
     let role: string = "";
     let dialog: string = "";
     let decrementParams: string[] = new Array;
+
+    // 追加倍率を計算する
+    let additionalRate: number = 100;
+    if(!isNaN(Number(multiplier))){
+        additionalRate = Number(multiplier);
+    }
 
     // ダメージ入力をユーザーに求める
     if(useShield){
@@ -26,11 +32,11 @@ function decrementHealth(useShield: boolean, shieldType: string, reductionRate: 
 
     // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
     if(useShield){
-        role = `C(((${damage})*${reductionRate*100}/100R)-({装甲}+{盾装甲})) 【盾ガード時被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+{盾装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
         decrementParams.push("HP");
         decrementParams.push(shieldType);
     }else{
-        role = `C(((${damage})*${reductionRate*100}/100R)-({装甲})) 【被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
         decrementParams.push("HP");
     }
 
@@ -280,7 +286,7 @@ export default function App(){
                                             variant="text"
                                             onClick={()=>{
                                                 const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(true, radioValue, reductionRate);
+                                                decrementHealth(true, radioValue, reductionRate, enableMagicArmour, multiplier);
                                             }}>
                                                 計算(盾あり)
                                         </Button>
@@ -289,7 +295,7 @@ export default function App(){
                                             variant="text"
                                             onClick={()=>{
                                                 const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(false, "", reductionRate);
+                                                decrementHealth(false, "", reductionRate, enableMagicArmour, multiplier);
                                             }}>
                                                 計算(盾なし)
                                         </Button>
@@ -331,7 +337,7 @@ export default function App(){
                                             />
                                         </div>
                                         <div style={{display: "flex", alignItems: "center"}}>
-                                            <span>追加倍率:&nbsp;</span>
+                                            <span>補助倍率:&nbsp;</span>
                                             <NumericField
                                                 state={multiplier}
                                                 setState={setMultiplier}

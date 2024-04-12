@@ -34,6 +34,8 @@ export async function decrementParamsWithResult(role: string, params: string[]):
         clickSubmitButton();
         await new Promise((resolve) => setTimeout(resolve, 100));// 指定された時間だけ待機する
     }
+
+    changeMessage("");
 }
 
 // ココフォリアで、パラメータを減少させるロールを取得する関数

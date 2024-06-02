@@ -32,12 +32,12 @@ function decrementHealth(useShield: boolean, shieldType: string, reductionRate: 
 
     // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
     if(useShield){
-        const shieldArmor: string = enableBigShield ? "({盾装甲}*3/2R)" : "{盾装甲}";
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${shieldArmor}+${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
+        const shieldArmor: string = enableBigShield ? "({盾装甲}*13/10R)" : "{盾装甲}";
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${shieldArmor}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
         decrementParams.push("HP");
         decrementParams.push(shieldType);
     }else{
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
         decrementParams.push("HP");
     }
 
@@ -373,7 +373,9 @@ export default function App(){
                                                 style={{marginLeft: "0.5rem"}}
                                                 variant="text"
                                                 onClick={()=>{
-                                                    sendCcfoliaMessage(["CCB<=({盾技能}+20) 【盾】", ":ビッグシールド-1"]);
+                                                    const roleMessage: string = `CCB<=({盾技能}${enableBigShield ? "+20" : ""}) 【盾】`
+                                                    const messages: string[] = enableBigShield ? [roleMessage, ":ビッグシールド-1"] : [roleMessage];
+                                                    sendCcfoliaMessage(messages);
                                                 }}>
                                                     盾技能
                                             </Button> 

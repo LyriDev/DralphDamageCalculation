@@ -40,3 +40,30 @@ export function sendMessage(messageText: string){ // ダブルクリックでメ
     const isDone: boolean = changeMessage(messageText);
     if(!isDone) clickSubmitButton();
 }
+
+
+async function sendMessagesWithDelay(messages: string[], interval: number = 100){ // 間隔を空けて複数メッセージを送信する関数
+    for(const message of messages){
+        changeMessage(message)
+        clickSubmitButton()
+        await new Promise((resolve) => setTimeout(resolve, interval));// 指定された時間だけ待機する
+    }
+    changeMessage("")
+}
+
+// ココフォリアのメッセージを送信する関数
+export function sendCcfoliaMessage(messages: string[]){
+    if(messages.length > 0){
+        const isChangedMessage: boolean = changeMessage(messages[0]) // メッセージを変更する
+        if(!isChangedMessage){
+            // メッセージに変更なければ送信する
+            if(messages.length === 1){
+                // メッセージが1つのとき
+                clickSubmitButton()
+            }else{
+                // メッセージが複数のとき、
+                sendMessagesWithDelay(messages)
+            }
+        }
+    }
+}

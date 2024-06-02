@@ -5,10 +5,10 @@ import Draggable from 'react-draggable';
 import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
 import AddPanelButton from "./AddPanelButton"
 import NumericField from "./NumericField"
-import { sendMessage } from '../utils/sendCcfoliaMessage';
+import { sendCcfoliaMessage, sendMessage } from '../utils/sendCcfoliaMessage';
 
 // ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
-function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number, enableMagicArmour: boolean, multiplier: string): void{
+function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number, enableMagicArmour: boolean, enableBigShield: boolean, multiplier: string): void{
     let role: string = "";
     let dialog: string = "";
     let decrementParams: string[] = new Array;
@@ -32,11 +32,12 @@ function decrementHealth(useShield: boolean, shieldType: string, reductionRate: 
 
     // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
     if(useShield){
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+{盾装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
+        const shieldArmor: string = enableBigShield ? "({盾装甲}*3/2R)" : "{盾装甲}";
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${shieldArmor}+${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
         decrementParams.push("HP");
         decrementParams.push(shieldType);
     }else{
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
         decrementParams.push("HP");
     }
 
@@ -162,6 +163,7 @@ export default function App(){
     const [visibleAdditions, setVisibleAdditions] = useState<boolean>(false);
 
     const [enableMagicArmour, setEnableMagicArmour] = useState<boolean>(false);
+    const [enableBigShield, setEnableBigShield] = useState<boolean>(false);
     const [multiplier, setMultiplier] = useState<string>("100");
 
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
@@ -286,7 +288,7 @@ export default function App(){
                                             variant="text"
                                             onClick={()=>{
                                                 const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(true, radioValue, reductionRate, enableMagicArmour, multiplier);
+                                                decrementHealth(true, radioValue, reductionRate, enableMagicArmour, enableBigShield, multiplier);
                                             }}>
                                                 計算(盾あり)
                                         </Button>
@@ -295,7 +297,7 @@ export default function App(){
                                             variant="text"
                                             onClick={()=>{
                                                 const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(false, "", reductionRate, enableMagicArmour, multiplier);
+                                                decrementHealth(false, "", reductionRate, enableMagicArmour, enableBigShield, multiplier);
                                             }}>
                                                 計算(盾なし)
                                         </Button>
@@ -336,6 +338,18 @@ export default function App(){
                                                 }
                                             />
                                         </div>
+                                        <div>
+                                            <FormControlLabel
+                                                className="draggable-disable"
+                                                label="ビッグシールド"
+                                                control={
+                                                    <Checkbox
+                                                        checked={enableBigShield}
+                                                        onChange={() => setEnableBigShield((prev) => !prev)}
+                                                    />
+                                                }
+                                            />
+                                        </div>
                                         <div style={{display: "flex", alignItems: "center"}}>
                                             <span>補助倍率:&nbsp;</span>
                                             <NumericField
@@ -359,7 +373,7 @@ export default function App(){
                                                 style={{marginLeft: "0.5rem"}}
                                                 variant="text"
                                                 onClick={()=>{
-                                                    sendMessage("CCB<=({盾技能}) 【盾】");
+                                                    sendCcfoliaMessage(["CCB<=({盾技能}+20) 【盾】", ":ビッグシールド-1"]);
                                                 }}>
                                                     盾技能
                                             </Button> 

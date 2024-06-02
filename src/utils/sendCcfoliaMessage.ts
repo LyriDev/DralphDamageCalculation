@@ -35,3 +35,8 @@ export function clickSubmitButton(){ // 送信ボタンを押下して送信す�
     const submitButton: HTMLButtonElement = document.querySelector(submitFormQuery) as HTMLButtonElement
     clickTheButton(submitButton)
 }
+
+export function sendMessage(messageText: string){ // ダブルクリックでメッセージを送信する関数
+    const isDone: boolean = changeMessage(messageText);
+    if(!isDone) clickSubmitButton();
+}

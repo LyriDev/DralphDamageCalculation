@@ -1,14 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Paper, Button, FormControl, FormControlLabel, RadioGroup, Radio, Slider } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Paper, Button, FormControl, FormControlLabel, RadioGroup, Radio, Slider, Checkbox } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
 import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
+import AddPanelButton from "./AddPanelButton"
+import NumericField from "./NumericField"
+import { sendMessage } from '../utils/sendCcfoliaMessage';
 
 // ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
-function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number): void{
+function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number, enableMagicArmour: boolean, multiplier: string): void{
     let role: string = "";
     let dialog: string = "";
     let decrementParams: string[] = new Array;
+
+    // 追加倍率を計算する
+    let additionalRate: number = 100;
+    if(!isNaN(Number(multiplier))){
+        additionalRate = Number(multiplier);
+    }
 
     // ダメージ入力をユーザーに求める
     if(useShield){
@@ -23,11 +32,11 @@ function decrementHealth(useShield: boolean, shieldType: string, reductionRate: 
 
     // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
     if(useShield){
-        role = `C(((${damage})*${reductionRate*100}/100R)-({装甲}+{盾装甲})) 【盾ガード時被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+{盾装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
         decrementParams.push("HP");
         decrementParams.push(shieldType);
     }else{
-        role = `C(((${damage})*${reductionRate*100}/100R)-({装甲})) 【被ダメージ】`;
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
         decrementParams.push("HP");
     }
 
@@ -84,6 +93,28 @@ const theme = createTheme({
                 },
             },
         },
+        MuiCheckbox: {
+            styleOverrides: {
+                root: {
+                    color: 'white', // 非アクティブ時のカラーを白に設定
+                },
+            },
+        },
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                        borderBottomColor: 'white', // 下線の色を白色に設定
+                    },
+                    '& .MuiInput-underline:before': {
+                      borderBottomColor: 'white', // 下線の色を白色に設定
+                    },
+                    '& .MuiInput-input': {
+                      color: 'white' // フォームの文字色を白色に設定
+                    }
+                }
+            }
+        }
     },
 });
 
@@ -127,19 +158,24 @@ function valueLabelFormat(value: number) {
 }
 
 export default function App(){
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [visible, setVisible] = useState<boolean>(false);
+    const [visibleAdditions, setVisibleAdditions] = useState<boolean>(false);
+
+    const [enableMagicArmour, setEnableMagicArmour] = useState<boolean>(false);
+    const [multiplier, setMultiplier] = useState<string>("100");
+
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
     const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
 
     const width: number = 320;
-    const height: number = 157;
+    const height: number = 167;
 
     const [radioValue, setRadioValue] = useState<string>("盾");
     const [sliderValue, setSliderValue] = useState<number>(0);
 
     function handleKeyDown(event: KeyboardEvent){
         if (event.altKey && event.key === 'q') {
-            setIsVisible((prev) => !prev);
+            setVisible((prev) => !prev);
             setRadioValue("盾");
             setSliderValue(0);
         }
@@ -162,7 +198,7 @@ export default function App(){
 
     return (
         <div>
-            {isVisible && (
+            {visible && (
                 <ThemeProvider theme={theme}>
                     <Draggable
                         defaultPosition={{
@@ -214,45 +250,127 @@ export default function App(){
                             </div>
                             <div
                                 style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center"
+                                    marginLeft: "2rem",
+                                    marginRight: "2rem"
                                 }}
                             >
-                                <FormControl
-                                    className="draggable-disable"
+                                <div
+                                    style={{
+                                        userSelect: "none",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}
                                 >
-                                    <RadioGroup
-                                        value={radioValue}
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            setRadioValue(event.target.value);
+                                    <FormControl
+                                        className="draggable-disable"
+                                    >
+                                        <RadioGroup
+                                            value={radioValue}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                setRadioValue(event.target.value);
+                                            }}
+                                        >
+                                            <FormControlLabel value="盾" control={<Radio />} label="盾"/>
+                                            <FormControlLabel value="盾2" control={<Radio />} label="盾2"/>
+                                        </RadioGroup>
+                                    </FormControl>
+                                    <div
+                                        style={{
+                                            flexGrow: 1,
+                                            textAlign: "center"
                                         }}
                                     >
-                                        <FormControlLabel value="盾" control={<Radio />} label="盾" />
-                                        <FormControlLabel value="盾2" control={<Radio />} label="盾2" />
-                                    </RadioGroup>
-                                </FormControl>
-                                <div>
-                                    <Button
-                                        className="draggable-disable"
-                                        variant="text"
-                                        onClick={()=>{
-                                            const reductionRate: number = getReductionRate(sliderValue);
-                                            decrementHealth(true, radioValue, reductionRate);
-                                        }}>
-                                            計算(盾あり)
-                                    </Button>
-                                    <Button
-                                        className="draggable-disable"
-                                        variant="text"
-                                        onClick={()=>{
-                                            const reductionRate: number = getReductionRate(sliderValue);
-                                            decrementHealth(false, "", reductionRate);
-                                        }}>
-                                            計算(盾なし)
-                                    </Button>
+                                        <Button
+                                            className="draggable-disable"
+                                            variant="text"
+                                            onClick={()=>{
+                                                const reductionRate: number = getReductionRate(sliderValue);
+                                                decrementHealth(true, radioValue, reductionRate, enableMagicArmour, multiplier);
+                                            }}>
+                                                計算(盾あり)
+                                        </Button>
+                                        <Button
+                                            className="draggable-disable"
+                                            variant="text"
+                                            onClick={()=>{
+                                                const reductionRate: number = getReductionRate(sliderValue);
+                                                decrementHealth(false, "", reductionRate, enableMagicArmour, multiplier);
+                                            }}>
+                                                計算(盾なし)
+                                        </Button>
+                                    </div>
                                 </div>
+                                {visibleAdditions && (<div
+                                    style={{
+                                        userSelect: "none",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <FormControl
+                                        className="draggable-disable"
+                                    >
+                                        <RadioGroup
+                                            value={radioValue}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                setRadioValue(event.target.value);
+                                            }}
+                                        >
+                                            <FormControlLabel value="神聖剣" control={<Radio />} label="神聖剣"/>
+                                            <FormControlLabel value="神聖剣2" control={<Radio />} label="神聖剣2"/>
+                                            <FormControlLabel value="神聖剣3" control={<Radio />} label="神聖剣3"/>
+                                        </RadioGroup>
+                                    </FormControl>
+                                    <div style={{alignItems: "center"}}>
+                                        <div>
+                                            <FormControlLabel
+                                                className="draggable-disable"
+                                                label="魔法装甲"
+                                                control={
+                                                    <Checkbox
+                                                        checked={enableMagicArmour}
+                                                        onChange={() => setEnableMagicArmour((prev) => !prev)}
+                                                    />
+                                                }
+                                            />
+                                        </div>
+                                        <div style={{display: "flex", alignItems: "center"}}>
+                                            <span>補助倍率:&nbsp;</span>
+                                            <NumericField
+                                                state={multiplier}
+                                                setState={setMultiplier}
+                                                style={{width: "3rem"}}
+                                            />
+                                            <span>%</span>
+                                        </div>
+                                        <div style={{marginTop: "0.5rem"}}>
+                                            <Button
+                                                className="draggable-disable"
+                                                variant="text"
+                                                onClick={()=>{
+                                                    sendMessage(":MP-1 【かばう消費MP】");
+                                                }}>
+                                                    かばう+1
+                                            </Button> 
+                                            <Button
+                                                className="draggable-disable"
+                                                style={{marginLeft: "0.5rem"}}
+                                                variant="text"
+                                                onClick={()=>{
+                                                    sendMessage("CCB<=({盾技能}) 【盾】");
+                                                }}>
+                                                    盾技能
+                                            </Button> 
+                                        </div>
+                                    </div>
+                                </div>)}
                             </div>
+                            <AddPanelButton
+                                visibleAdditions={visibleAdditions}
+                                setVisibleAdditions={setVisibleAdditions}
+                            />
                         </Paper>
                     </Draggable>
                 </ThemeProvider>
@@ -260,3 +378,23 @@ export default function App(){
         </div>
     );
 };
+
+
+{/*                                         <FormControlLabel
+                                            className="draggable-disable"
+                                            label="魔法装甲"
+                                            control={
+                                                <Checkbox
+                                                    checked={enableMagicArmour}
+                                                    onChange={() => setEnableMagicArmour((prev) => !prev)}
+                                                />
+                                            }
+                                        />
+                                        <Button
+                                            className="draggable-disable"
+                                            variant="text"
+                                            onClick={()=>{
+                                                
+                                            }}>
+                                                盾技能
+                                        </Button> */}

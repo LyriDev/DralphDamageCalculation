@@ -3,12 +3,12 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 type Props = {
-    value: string;
-    setValue: React.Dispatch<React.SetStateAction<string>>;
     shieldNames: string[];
+    shieldIndex: number;
+    setShieldIndex:  (value: React.SetStateAction<number>) => void
 }
 
-export default function SelectShield({value, setValue, shieldNames}: Props){
+export default function SelectShield({shieldNames, shieldIndex, setShieldIndex}: Props){
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
@@ -35,7 +35,7 @@ export default function SelectShield({value, setValue, shieldNames}: Props){
                         textWrap: "nowrap"
                     }}
                 >
-                    {value}
+                    {shieldNames[shieldIndex]}
                 </span>
                 <ArrowDropDownIcon/>
             </Button>
@@ -43,12 +43,18 @@ export default function SelectShield({value, setValue, shieldNames}: Props){
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
+                sx={{
+                    '& .MuiPaper-root': {
+                        color: "#fff",
+                        backgroundColor: "rgba(44, 44, 44, 0.87)"
+                    }
+                }}
             >
                 {shieldNames.map((shieldName, index) => (
                     <MenuItem
                         key={index}
                         onClick={() => {
-                            setValue(shieldName);
+                            setShieldIndex(index);
                             handleClose();
                         }}
                     >

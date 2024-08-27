@@ -1,5 +1,5 @@
-import React from 'react';
-import { FormControlLabel, Checkbox } from '@mui/material';
+import React, { useState } from 'react';
+import { FormControlLabel, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { SpecialArmor } from "./../utils/types";
 
@@ -16,6 +16,17 @@ export default function SelectSpecialArmor({
     specialArmors,
     setSpecialArmors
 }: Props){
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    function handleClick(event: React.MouseEvent<HTMLButtonElement>){
+        setAnchorEl(event.currentTarget);
+    };
+
+    function handleClose(){
+        setAnchorEl(null);
+    };
+
     return (
         <div>
             <FormControlLabel
@@ -24,6 +35,8 @@ export default function SelectSpecialArmor({
                     <div style={{display: "flex"}}>
                         <span
                             style={{
+                                alignItems: "center",
+                                display: "flex",
                                 maxWidth: "6rem",
                                 overflow:"hidden",
                                 textOverflow: "ellipsis",
@@ -31,9 +44,11 @@ export default function SelectSpecialArmor({
                                 userSelect: "none"
                             }}
                         >
-                            魔法装甲
+                            特殊装甲
                         </span>
-                        <ArrowDropDownIcon/>
+                        <IconButton onClick={handleClick} color="inherit">
+                            <ArrowDropDownIcon/>
+                        </IconButton>
                     </div>
                 }
                 control={
@@ -43,6 +58,35 @@ export default function SelectSpecialArmor({
                     />
                 }
             />
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                sx={{
+                    '& .MuiPaper-root': {
+                        color: "#fff",
+                        backgroundColor: "rgba(44, 44, 44, 0.87)"
+                    }
+                }}
+            >
+                {specialArmors.map((data, index) => (
+                    <MenuItem key={index}>
+                        <FormControlLabel
+                            label={data.armorName}
+                            control={
+                                <Checkbox
+                                    checked={data.enable}
+                                    onChange={() => setSpecialArmors((prev) => {
+                                        const newData = [...prev];
+                                        newData[index].enable = !newData[index].enable;
+                                        return newData;
+                                    })}
+                                />
+                            }
+                        />
+                    </MenuItem>
+                ))}
+            </Menu>
         </div>
     );
 };

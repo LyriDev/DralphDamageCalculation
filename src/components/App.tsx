@@ -10,9 +10,9 @@ import SelectShield from "./SelectShield";
 import BigShield from "./BigShield";
 import SpecialMagnification from "./SpecialMagnification";
 import SelectSpecialArmor from "./SelectSpecialArmor"
-import { SpecialArmor } from "./../utils/types";
+import { SpecialArmor, Shield } from "./../utils/types";
 
-const shieldList = [
+const shields = [
     {
         shieldName: "盾",
         shieldArmorName: "盾装甲"
@@ -22,21 +22,25 @@ const shieldList = [
         shieldArmorName: "盾装甲"
     },
     {
+        shieldName: "両手盾",
+        shieldArmorName: "両手盾装甲"
+    },
+    {
+        shieldName: "両手盾2",
+        shieldArmorName: "両手盾装甲"
+    },
+    {
         shieldName: "神聖剣",
-        shieldArmorName: "盾装甲"
+        shieldArmorName: "神聖剣装甲"
     },
     {
         shieldName: "神聖剣2",
-        shieldArmorName: "盾装甲"
+        shieldArmorName: "神聖剣装甲"
     },
     {
         shieldName: "神聖剣3",
-        shieldArmorName: "盾装甲"
-    },
-    {
-        shieldName: "神聖神聖神聖剣",
-        shieldArmorName: "盾装甲"
-    },
+        shieldArmorName: "神聖剣装甲"
+    }
 ]
 
 const specialArmorList = [
@@ -50,6 +54,38 @@ const specialArmorList = [
     },
     {
         armorName: "息装甲",
+        enable: false
+    },
+    {
+        armorName: "火耐性",
+        enable: false
+    },
+    {
+        armorName: "氷耐性",
+        enable: false
+    },
+    {
+        armorName: "風耐性",
+        enable: false
+    },
+    {
+        armorName: "土耐性",
+        enable: false
+    },
+    {
+        armorName: "雷耐性",
+        enable: false
+    },
+    {
+        armorName: "水耐性",
+        enable: false
+    },
+    {
+        armorName: "光耐性",
+        enable: false
+    },
+    {
+        armorName: "闇耐性",
         enable: false
     }
 ]
@@ -126,15 +162,13 @@ export default function App(){
     const width: number = 340;
     const height: number = 97;
 
-    const [shieldName, setShieldName] = useState<string>(shieldList[0].shieldName);
-    const [shieldArmourName, setShieldArmourName] = useState<string>(shieldList[0].shieldArmorName);
+    const [shieldList, setShieldList] = useState<Shield[]>(shields);
+    const [shieldIndex, setShieldIndex] = useState<number>(0);
     const [sliderValue, setSliderValue] = useState<number>(0);
 
     function handleKeyDown(event: KeyboardEvent){
         if (event.altKey && event.key === 'q') {
             setVisible((prev) => !prev);
-            setShieldName("盾");
-            setSliderValue(0);
         }
     };
 
@@ -199,17 +233,17 @@ export default function App(){
                                     }}
                                 >
                                     <SelectShield
-                                        value={shieldName}
-                                        setValue={setShieldName}
                                         shieldNames={shieldList.map(data => data.shieldName)}
+                                        shieldIndex={shieldIndex}
+                                        setShieldIndex={setShieldIndex}
                                     />
                                     <CalculateButton
                                         enableSpecialArmour={enableSpecialArmour}
                                         specialArmors={specialArmors}
                                         enableBigShield={enableBigShield}
                                         multiplier={multiplier}
-                                        shieldName={shieldName}
-                                        shieldArmourName={shieldArmourName}
+                                        shieldName={shieldList[shieldIndex].shieldName}
+                                        shieldArmourName={shieldList[shieldIndex].shieldArmorName}
                                         sliderValue={sliderValue}
                                     />
                                 </div>

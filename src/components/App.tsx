@@ -1,68 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Button, FormControl, FormControlLabel, RadioGroup, Radio, Slider, Checkbox } from '@mui/material';
+import { Paper, Button, FormControlLabel, Checkbox } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
-import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
 import AddPanelButton from "./AddPanelButton"
-import NumericField from "./NumericField"
 import { sendCcfoliaMessage, sendMessage } from '../utils/sendCcfoliaMessage';
+import StatusLevelChange from "./StatusLevelChange";
+import CalculateButton from "./CalculateButton";
+import SelectShield from "./SelectShield";
+import BigShield from "./BigShield";
+import SpecialMagnification from "./SpecialMagnification";
+import SpecialArmor from "./SpecialArmor";
 
-// ダメージ処理(HPと盾の耐久力を減少させるロール)を行う関数
-function decrementHealth(useShield: boolean, shieldType: string, reductionRate: number, enableMagicArmour: boolean, enableBigShield: boolean, multiplier: string): void{
-    let role: string = "";
-    let dialog: string = "";
-    let decrementParams: string[] = new Array;
+const shields = [
+    {
+        shieldName: "盾",
+        shieldArmorName: "盾装甲"
+    },
+    {
+        shieldName: "盾2",
+        shieldArmorName: "盾装甲"
+    },
+    {
+        shieldName: "神聖剣",
+        shieldArmorName: "盾装甲"
+    },
+    {
+        shieldName: "神聖剣2",
+        shieldArmorName: "盾装甲"
+    },
+    {
+        shieldName: "神聖剣3",
+        shieldArmorName: "盾装甲"
+    },
+    {
+        shieldName: "神聖神聖神聖剣",
+        shieldArmorName: "盾装甲"
+    },
+]
 
-    // 追加倍率を計算する
-    let additionalRate: number = 100;
-    if(!isNaN(Number(multiplier))){
-        additionalRate = Number(multiplier);
-    }
-
-    // ダメージ入力をユーザーに求める
-    if(useShield){
-        dialog = `相手が出したダメージを入力してください。\n被ダメージ計算後、HPと${shieldType}の耐久力を減少させます。`;
-    }else{
-        dialog = `相手が出したダメージを入力してください。\n被ダメージ計算後、HPを減少させます。`;
-    }
-    const damage: string = window.prompt(dialog);
-
-    // ダメージ入力が不正な値の場合、処理をやめる
-    if((isNaN(Number(damage)) || (damage === "") || (damage === null))) return;
-
-    // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
-    if(useShield){
-        const shieldArmor: string = enableBigShield ? "({盾装甲}*13/10R)" : "{盾装甲}";
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${shieldArmor}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【盾ガード時被ダメージ】`;
-        decrementParams.push("HP");
-        decrementParams.push(shieldType);
-    }else{
-        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${enableMagicArmour ? "+{魔法装甲}" : ""})) 【被ダメージ】`;
-        decrementParams.push("HP");
-    }
-
-    // ダメージを計算するロールを行い、その結果を元にパラメータを減少させるロールを行う
-    decrementParamsWithResult(role, decrementParams);
-}
-
-// 物理防御力段階等を元に、実際の軽減倍率を計算する関数
-function getReductionRate(reductionGrade: number): number{
-    let result: number = 1;
-    const reductionTable: {
-        [grade: string]: number;
-    } = {
-        "3": 0.25,
-        "2": 0.5,
-        "1": 0.75,
-        "0": 1,
-        "-1": 1.5,
-        "-2": 1.75,
-        "-3": 2
-    };
-    const reductionRate: number | undefined = reductionTable[reductionGrade];
-    if(reductionRate !== undefined) result = reductionRate;
-    return result;
-}
 
 const theme = createTheme({
     palette: {
@@ -119,45 +94,6 @@ const theme = createTheme({
     },
 });
 
-const marks = [
-    {
-        value: -3,
-        label: '2倍',
-    },
-    {
-        value: -2,
-        label: '1.75倍',
-    },
-    {
-        value: -1,
-        label: '1.5倍',
-    },
-    {
-        value: 0,
-        label: '1倍',
-    },
-    {
-        value: 1,
-        label: '0.75倍',
-    },
-    {
-        value: 2,
-        label: '0.5倍',
-    },
-    {
-        value: 3,
-        label: '0.25倍',
-    }
-];
-
-function valuetext(value: number) {
-    return `${value}倍`;
-}
-
-function valueLabelFormat(value: number) {
-    return marks.findIndex((mark) => mark.value === value) + 1;
-}
-
 export default function App(){
     const [visible, setVisible] = useState<boolean>(false);
     const [visibleAdditions, setVisibleAdditions] = useState<boolean>(false);
@@ -169,16 +105,16 @@ export default function App(){
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
     const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
 
-    const width: number = 320;
-    const height: number = 167;
+    const width: number = 340;
+    const height: number = 97;
 
-    const [radioValue, setRadioValue] = useState<string>("盾");
+    const [shieldName, setShieldName] = useState<string>("盾");
     const [sliderValue, setSliderValue] = useState<number>(0);
 
     function handleKeyDown(event: KeyboardEvent){
         if (event.altKey && event.key === 'q') {
             setVisible((prev) => !prev);
-            setRadioValue("盾");
+            setShieldName("盾");
             setSliderValue(0);
         }
     };
@@ -205,12 +141,12 @@ export default function App(){
                     <Draggable
                         defaultPosition={{
                             x: (windowWidth - width) / 2,
-                            y: -(windowHeight + height) / 2
+                            y: -(windowHeight + (height + 16 * 3)) / 2
                         }}
                         bounds={{
                             top: -windowHeight,
                             right: (windowWidth - width),
-                            bottom: -height,
+                            bottom: -(height + 16 * 3),
                             left: 0
                         }}
                         cancel=".draggable-disable"
@@ -223,143 +159,81 @@ export default function App(){
                                 borderRadius: "0",
                                 minWidth: `${width}px`,
                                 minHeight: `${height}px`,
+                                paddingTop: "16px",
+                                paddingBottom: "32px"
                             }}
                             elevation={10}
                         >
+                            <StatusLevelChange sliderValue={sliderValue} setSliderValue={setSliderValue}/>
                             <div
                                 style={{
-                                    paddingTop: "1rem"
-                                }}
-                            >
-                                <Slider
-                                    className="draggable-disable"
-                                    style={{
-                                        marginLeft: "2rem",
-                                        marginRight: "2rem",
-                                        width: "calc(320px - 4rem)"
-                                    }}
-                                    defaultValue={sliderValue}
-                                    valueLabelFormat={valueLabelFormat}
-                                    getAriaValueText={valuetext}
-                                    step={null}
-                                    marks={marks}
-                                    min={-3}
-                                    max={3}
-                                    onChange={(event: Event, newValue: number) => {
-                                        setSliderValue(newValue);
-                                    }}
-                                />
-                            </div>
-                            <div
-                                style={{
-                                    marginLeft: "2rem",
-                                    marginRight: "2rem"
+                                    display: "flex",
+                                    flexDirection: "row"
                                 }}
                             >
                                 <div
                                     style={{
-                                        userSelect: "none",
+                                        flexGrow: 1,
                                         display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center"
+                                        flexDirection: "row",
+                                        justifyContent: "space-evenly"
                                     }}
                                 >
-                                    <FormControl
-                                        className="draggable-disable"
-                                    >
-                                        <RadioGroup
-                                            value={radioValue}
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                setRadioValue(event.target.value);
-                                            }}
-                                        >
-                                            <FormControlLabel value="盾" control={<Radio />} label="盾"/>
-                                            <FormControlLabel value="盾2" control={<Radio />} label="盾2"/>
-                                        </RadioGroup>
-                                    </FormControl>
+                                    <SelectShield
+                                        value={shieldName}
+                                        setValue={setShieldName}
+                                        shieldNames={shields.map(data => data.shieldName)}
+                                    />
+                                    <CalculateButton
+                                        enableMagicArmour={enableMagicArmour}
+                                        enableBigShield={enableBigShield}
+                                        multiplier={multiplier}
+                                        radioValue={shieldName}
+                                        sliderValue={sliderValue}
+                                    />
+                                </div>
+                                <AddPanelButton
+                                    visibleAdditions={visibleAdditions}
+                                    setVisibleAdditions={setVisibleAdditions}
+                                />
+                            </div>
+                            {visibleAdditions && (
+                                <div
+                                    style={{
+                                        marginLeft: "1rem"
+                                    }}
+                                >
                                     <div
                                         style={{
-                                            flexGrow: 1,
-                                            textAlign: "center"
+                                            display: "flex",
+                                            flexDirection: "row"
                                         }}
                                     >
-                                        <Button
-                                            className="draggable-disable"
-                                            variant="text"
-                                            onClick={()=>{
-                                                const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(true, radioValue, reductionRate, enableMagicArmour, enableBigShield, multiplier);
-                                            }}>
-                                                計算(盾あり)
-                                        </Button>
-                                        <Button
-                                            className="draggable-disable"
-                                            variant="text"
-                                            onClick={()=>{
-                                                const reductionRate: number = getReductionRate(sliderValue);
-                                                decrementHealth(false, "", reductionRate, enableMagicArmour, enableBigShield, multiplier);
-                                            }}>
-                                                計算(盾なし)
-                                        </Button>
-                                    </div>
-                                </div>
-                                {visibleAdditions && (<div
-                                    style={{
-                                        userSelect: "none",
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center"
-                                    }}
-                                >
-                                    <FormControl
-                                        className="draggable-disable"
-                                    >
-                                        <RadioGroup
-                                            value={radioValue}
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                setRadioValue(event.target.value);
+                                        <BigShield enableBigShield={enableBigShield} setEnableBigShield={setEnableBigShield}/>
+                                        <div
+                                            style={{
+                                                flexGrow: 1,
+                                                display: "flex",
+                                                justifyContent: "center"
                                             }}
                                         >
-                                            <FormControlLabel value="神聖剣" control={<Radio />} label="神聖剣"/>
-                                            <FormControlLabel value="神聖剣2" control={<Radio />} label="神聖剣2"/>
-                                            <FormControlLabel value="神聖剣3" control={<Radio />} label="神聖剣3"/>
-                                        </RadioGroup>
-                                    </FormControl>
-                                    <div style={{alignItems: "center"}}>
-                                        <div>
-                                            <FormControlLabel
-                                                className="draggable-disable"
-                                                label="魔法装甲"
-                                                control={
-                                                    <Checkbox
-                                                        checked={enableMagicArmour}
-                                                        onChange={() => setEnableMagicArmour((prev) => !prev)}
-                                                    />
-                                                }
-                                            />
+                                            <SpecialMagnification multiplier={multiplier} setMultiplier={setMultiplier}/>
                                         </div>
-                                        <div>
-                                            <FormControlLabel
-                                                className="draggable-disable"
-                                                label="ビッグシールド"
-                                                control={
-                                                    <Checkbox
-                                                        checked={enableBigShield}
-                                                        onChange={() => setEnableBigShield((prev) => !prev)}
-                                                    />
-                                                }
-                                            />
-                                        </div>
-                                        <div style={{display: "flex", alignItems: "center"}}>
-                                            <span>補助倍率:&nbsp;</span>
-                                            <NumericField
-                                                state={multiplier}
-                                                setState={setMultiplier}
-                                                style={{width: "3rem"}}
-                                            />
-                                            <span>%</span>
-                                        </div>
-                                        <div style={{marginTop: "0.5rem"}}>
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "row"
+                                        }}
+                                    >
+                                        <SpecialArmor enableMagicArmour={enableMagicArmour} setEnableMagicArmour={setEnableMagicArmour}/>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexGrow: 1,
+                                                justifyContent: "center"
+                                            }}
+                                        >
                                             <Button
                                                 className="draggable-disable"
                                                 variant="text"
@@ -378,15 +252,11 @@ export default function App(){
                                                     sendCcfoliaMessage(messages);
                                                 }}>
                                                     盾技能
-                                            </Button> 
+                                            </Button>
                                         </div>
                                     </div>
-                                </div>)}
-                            </div>
-                            <AddPanelButton
-                                visibleAdditions={visibleAdditions}
-                                setVisibleAdditions={setVisibleAdditions}
-                            />
+                                </div>
+                            )}
                         </Paper>
                     </Draggable>
                 </ThemeProvider>
@@ -394,23 +264,3 @@ export default function App(){
         </div>
     );
 };
-
-
-{/*                                         <FormControlLabel
-                                            className="draggable-disable"
-                                            label="魔法装甲"
-                                            control={
-                                                <Checkbox
-                                                    checked={enableMagicArmour}
-                                                    onChange={() => setEnableMagicArmour((prev) => !prev)}
-                                                />
-                                            }
-                                        />
-                                        <Button
-                                            className="draggable-disable"
-                                            variant="text"
-                                            onClick={()=>{
-                                                
-                                            }}>
-                                                盾技能
-                                        </Button> */}

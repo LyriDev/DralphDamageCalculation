@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton  } from '@mui/material';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 
 export default function AddPanelButton({
@@ -22,7 +22,7 @@ export default function AddPanelButton({
                 className="draggable-disable"
                 onClick={() => setVisibleAdditions((prev) => !prev)}
             >
-                {visibleAdditions ? <ArrowDropUpIcon/> : <ArrowDropDownIcon/>}
+                {visibleAdditions ? <RemoveIcon/> : <AddIcon/>}
             </IconButton>
         </div>
     );

@@ -1,13 +1,21 @@
 import React from 'react';
 import { FormControlLabel, Checkbox } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { SpecialArmor } from "./../utils/types";
 
 type Props = {
-    enableMagicArmour: boolean;
-    setEnableMagicArmour: React.Dispatch<React.SetStateAction<boolean>>;
+    enableSpecialArmour: boolean;
+    setEnableSpecialArmour: React.Dispatch<React.SetStateAction<boolean>>;
+    specialArmors: SpecialArmor[];
+    setSpecialArmors: React.Dispatch<React.SetStateAction<SpecialArmor[]>>;
 }
 
-export default function SpecialArmor({enableMagicArmour, setEnableMagicArmour}: Props){
+export default function SelectSpecialArmor({
+    enableSpecialArmour,
+    setEnableSpecialArmour,
+    specialArmors,
+    setSpecialArmors
+}: Props){
     return (
         <div>
             <FormControlLabel
@@ -30,8 +38,8 @@ export default function SpecialArmor({enableMagicArmour, setEnableMagicArmour}: 
                 }
                 control={
                     <Checkbox
-                        checked={enableMagicArmour}
-                        onChange={() => setEnableMagicArmour((prev) => !prev)}
+                        checked={enableSpecialArmour}
+                        onChange={() => setEnableSpecialArmour((prev) => !prev)}
                     />
                 }
             />

@@ -9,9 +9,10 @@ import CalculateButton from "./CalculateButton";
 import SelectShield from "./SelectShield";
 import BigShield from "./BigShield";
 import SpecialMagnification from "./SpecialMagnification";
-import SpecialArmor from "./SpecialArmor";
+import SelectSpecialArmor from "./SelectSpecialArmor"
+import { SpecialArmor } from "./../utils/types";
 
-const shields = [
+const shieldList = [
     {
         shieldName: "盾",
         shieldArmorName: "盾装甲"
@@ -36,6 +37,21 @@ const shields = [
         shieldName: "神聖神聖神聖剣",
         shieldArmorName: "盾装甲"
     },
+]
+
+const specialArmorList = [
+    {
+        armorName: "物理装甲",
+        enable: false
+    },
+    {
+        armorName: "魔法装甲",
+        enable: true
+    },
+    {
+        armorName: "息装甲",
+        enable: false
+    }
 ]
 
 
@@ -98,7 +114,9 @@ export default function App(){
     const [visible, setVisible] = useState<boolean>(false);
     const [visibleAdditions, setVisibleAdditions] = useState<boolean>(false);
 
-    const [enableMagicArmour, setEnableMagicArmour] = useState<boolean>(false);
+    const [enableSpecialArmour, setEnableSpecialArmour] = useState<boolean>(false);
+    const [specialArmors, setSpecialArmors] = useState<SpecialArmor[]>(specialArmorList);
+
     const [enableBigShield, setEnableBigShield] = useState<boolean>(false);
     const [multiplier, setMultiplier] = useState<string>("100");
 
@@ -108,7 +126,8 @@ export default function App(){
     const width: number = 340;
     const height: number = 97;
 
-    const [shieldName, setShieldName] = useState<string>("盾");
+    const [shieldName, setShieldName] = useState<string>(shieldList[0].shieldName);
+    const [shieldArmourName, setShieldArmourName] = useState<string>(shieldList[0].shieldArmorName);
     const [sliderValue, setSliderValue] = useState<number>(0);
 
     function handleKeyDown(event: KeyboardEvent){
@@ -182,13 +201,15 @@ export default function App(){
                                     <SelectShield
                                         value={shieldName}
                                         setValue={setShieldName}
-                                        shieldNames={shields.map(data => data.shieldName)}
+                                        shieldNames={shieldList.map(data => data.shieldName)}
                                     />
                                     <CalculateButton
-                                        enableMagicArmour={enableMagicArmour}
+                                        enableSpecialArmour={enableSpecialArmour}
+                                        specialArmors={specialArmors}
                                         enableBigShield={enableBigShield}
                                         multiplier={multiplier}
-                                        radioValue={shieldName}
+                                        shieldName={shieldName}
+                                        shieldArmourName={shieldArmourName}
                                         sliderValue={sliderValue}
                                     />
                                 </div>
@@ -226,7 +247,12 @@ export default function App(){
                                             flexDirection: "row"
                                         }}
                                     >
-                                        <SpecialArmor enableMagicArmour={enableMagicArmour} setEnableMagicArmour={setEnableMagicArmour}/>
+                                        <SelectSpecialArmor
+                                            enableSpecialArmour={enableSpecialArmour}
+                                            setEnableSpecialArmour={setEnableSpecialArmour}
+                                            specialArmors={specialArmors}
+                                            setSpecialArmors={setSpecialArmors}
+                                        />
                                         <div
                                             style={{
                                                 display: "flex",

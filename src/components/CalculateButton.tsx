@@ -11,6 +11,7 @@ type Props = {
     shieldName: string;
     shieldArmourName: string;
     sliderValue: number;
+    enableWound: boolean;
 }
 
 // 物理防御力段階等を元に、実際の軽減倍率を計算する関数
@@ -40,7 +41,8 @@ export default function CalculateButton(props: Props){
         multiplier,
         shieldName,
         shieldArmourName,
-        sliderValue
+        sliderValue,
+        enableWound
     } = props;
 
     // 有効な特殊装甲を取得する関数
@@ -90,7 +92,7 @@ export default function CalculateButton(props: Props){
         }
 
         // ダメージを計算するロールを行い、その結果を元にパラメータを減少させるロールを行う
-        decrementParamsWithResult(role, decrementParams);
+        decrementParamsWithResult(role, decrementParams, enableWound);
     }
 
     return (

@@ -10,6 +10,7 @@ import SelectShield from "./SelectShield";
 import BigShield from "./BigShield";
 import SpecialMagnification from "./SpecialMagnification";
 import SelectSpecialArmor from "./SelectSpecialArmor"
+import Wound from "./Wound"
 import { SpecialArmor, Shield } from "./../utils/types";
 
 const shields = [
@@ -166,6 +167,8 @@ export default function App(){
     const [shieldIndex, setShieldIndex] = useState<number>(0);
     const [sliderValue, setSliderValue] = useState<number>(0);
 
+    const [enableWound, setEnableWound] = useState<boolean>(false);
+
     function handleKeyDown(event: KeyboardEvent){
         if (event.altKey && event.key === 'q') {
             setVisible((prev) => !prev);
@@ -213,7 +216,8 @@ export default function App(){
                                 minWidth: `${width}px`,
                                 minHeight: `${height}px`,
                                 paddingTop: "16px",
-                                paddingBottom: "32px"
+                                paddingBottom: "32px",
+                                userSelect: "none"
                             }}
                             elevation={10}
                         >
@@ -245,6 +249,7 @@ export default function App(){
                                         shieldName={shieldList[shieldIndex].shieldName}
                                         shieldArmourName={shieldList[shieldIndex].shieldArmorName}
                                         sliderValue={sliderValue}
+                                        enableWound={enableWound}
                                     />
                                 </div>
                                 <AddPanelButton
@@ -281,6 +286,24 @@ export default function App(){
                                             flexDirection: "row"
                                         }}
                                     >
+                                        <Wound
+                                            enableWound={enableWound}
+                                            setEnableWound={setEnableWound}
+                                        />
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexGrow: 1,
+                                                justifyContent: "center"
+                                            }}
+                                        />
+                                    </div>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "row"
+                                        }}
+                                    >
                                         <SelectSpecialArmor
                                             enableSpecialArmour={enableSpecialArmour}
                                             setEnableSpecialArmour={setEnableSpecialArmour}
@@ -308,7 +331,8 @@ export default function App(){
                                                 variant="text"
                                                 onClick={()=>{
                                                     const roleMessage: string = `CCB<=({盾技能}${enableBigShield ? "+20" : ""}) 【盾】`
-                                                    const messages: string[] = enableBigShield ? [roleMessage, ":ビッグシールド-1"] : [roleMessage];
+                                                    const messages: string[] = [roleMessage];
+                                                    if(enableBigShield)  messages.push(":ビッグシールド-1");
                                                     sendCcfoliaMessage(messages);
                                                 }}>
                                                     盾技能

@@ -2,7 +2,7 @@ import { messageColumnQuery, nameFormQuery, roomChatQuery } from "./documentQuer
 import { changeMessage, clickSubmitButton } from "./sendCcfoliaMessage"
 
 // 特定のダイスロール結果を元に、パラメータを減少させる関数
-export async function decrementParamsWithResult(role: string, params: string[]): Promise<void>{
+export async function decrementParamsWithResult(role: string, params: string[], enableWound: boolean): Promise<void>{
     // 入力内容を変更する
     changeMessage(role);
 
@@ -33,6 +33,12 @@ export async function decrementParamsWithResult(role: string, params: string[]):
         changeMessage(decrementRoll);
         clickSubmitButton();
         await new Promise((resolve) => setTimeout(resolve, 100));// 指定された時間だけ待機する
+    }
+
+    // "傷"パラメータを増やす場合は、増加させる
+    if(enableWound){
+        changeMessage(":傷+1");
+        clickSubmitButton();
     }
 
     changeMessage("");

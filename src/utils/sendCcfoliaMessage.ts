@@ -52,7 +52,7 @@ async function sendMessagesWithDelay(messages: string[], interval: number = 100)
 }
 
 // ココフォリアのメッセージを送信する関数
-export function sendCcfoliaMessage(messages: string[]){
+export function sendCcfoliaMessage(messages: string[]): boolean{
     if(messages.length > 0){
         const isChangedMessage: boolean = changeMessage(messages[0]) // メッセージを変更する
         if(!isChangedMessage){
@@ -65,5 +65,6 @@ export function sendCcfoliaMessage(messages: string[]){
                 sendMessagesWithDelay(messages)
             }
         }
+        return !isChangedMessage
     }
 }

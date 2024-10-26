@@ -9,7 +9,7 @@ type Props = {
 
 export default function Wound({enableWound, setEnableWound}: Props){
     return (
-        <div>
+        <div style={{display: "flex", alignItems: "center"}}>
             <FormControlLabel
                 className="draggable-disable"
                 sx={{

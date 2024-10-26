@@ -12,6 +12,7 @@ import SpecialMagnification from "./SpecialMagnification";
 import SelectSpecialArmor from "./SelectSpecialArmor"
 import Wound from "./Wound"
 import { SpecialArmor, Shield } from "./../utils/types";
+import TwoHandsShield from "./TwoHandsShield"
 
 const shields = [
     {
@@ -91,6 +92,13 @@ const specialArmorList = [
     }
 ]
 
+export const twoHandsShieldCountMax: number = 10;
+const twoHandsShieldCountMinus: number = 5;
+
+function showTextWithConditions(text: string, conditions: boolean){
+    if(conditions) return text;
+    return "";
+}
 
 const theme = createTheme({
     palette: {
@@ -166,6 +174,9 @@ export default function App(){
     const [shieldList, setShieldList] = useState<Shield[]>(shields);
     const [shieldIndex, setShieldIndex] = useState<number>(0);
     const [sliderValue, setSliderValue] = useState<number>(0);
+
+    const [twoHandsShieldCount, setTwoHandsShieldCount] = useState<number>(0);
+    const [isTwoHandsShieldCountLocked, setIsTwoHandsShieldCountLocked] = useState<boolean>(false);
 
     const [enableWound, setEnableWound] = useState<boolean>(false);
 
@@ -294,9 +305,17 @@ export default function App(){
                                             style={{
                                                 display: "flex",
                                                 flexGrow: 1,
-                                                justifyContent: "center"
+                                                justifyContent: "end",
+                                                alignItems: "center"
                                             }}
-                                        />
+                                        >
+                                            <TwoHandsShield
+                                                count={twoHandsShieldCount}
+                                                setCount={setTwoHandsShieldCount}
+                                                isLocked={isTwoHandsShieldCountLocked}
+                                                setIsLocked={setIsTwoHandsShieldCountLocked}
+                                            />
+                                        </div>
                                     </div>
                                     <div
                                         style={{
@@ -330,10 +349,17 @@ export default function App(){
                                                 style={{marginLeft: "0.5rem"}}
                                                 variant="text"
                                                 onClick={()=>{
-                                                    const roleMessage: string = `CCB<=({盾技能}${enableBigShield ? "+20" : ""}) 【盾】`
+                                                    const isUseTwoHandsShield: boolean = shieldList[shieldIndex].shieldArmorName.includes("両手盾"); // 両手盾が選択されているかどうか
+                                                    let minusRevision: string = showTextWithConditions(`-${twoHandsShieldCount*twoHandsShieldCountMinus}`, (isUseTwoHandsShield && twoHandsShieldCount > 0)); // 両手盾の使用時マイナス補正を計算する
+                                                    const revision: string = minusRevision + showTextWithConditions("+20", enableBigShield); // 両手盾のマイナス補正 + ビッグシールドのプラス補正
+                                                    const isCountStop: string = showTextWithConditions("以降", (twoHandsShieldCount >= twoHandsShieldCountMax)); // 両手盾のマイナス補正がカンストしているかどうか
+                                                    const countView: string = `${(twoHandsShieldCount >= twoHandsShieldCountMax) ? twoHandsShieldCountMax : twoHandsShieldCount+1}回目`// n回目
+                                                    const skillName: string = (isUseTwoHandsShield ? `【両手盾】${showTextWithConditions(`${countView}${isCountStop}`, !isTwoHandsShieldCountLocked)}` : "【盾】") // 技能名
+                                                    const roleMessage: string = `CCB<=({盾技能}${revision}) ${skillName}` // 盾技能ロール
                                                     const messages: string[] = [roleMessage];
                                                     if(enableBigShield)  messages.push(":ビッグシールド-1");
-                                                    sendCcfoliaMessage(messages);
+                                                    const isMessageChanged: boolean = sendCcfoliaMessage(messages);
+                                                    if(isMessageChanged && isUseTwoHandsShield && !isTwoHandsShieldCountLocked) setTwoHandsShieldCount((prev) => Math.min(prev+1, twoHandsShieldCountMax))
                                                 }}>
                                                     盾技能
                                             </Button>

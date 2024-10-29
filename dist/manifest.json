@@ -1,7 +1,7 @@
 {
     "name": "ドラルフ神話ダメージ計算",
     "description": "ドラルフ神話のダメージ計算を行います。",
-    "version": "1.4",
+    "version": "1.5",
     "manifest_version": 3,
     "icons": {
         "16": "image/icon16.png",

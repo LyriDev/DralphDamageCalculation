@@ -201,6 +201,20 @@ export default function App(){
         };
     }, []);
 
+    function roleShield(divide2: boolean = false){
+        const isUseTwoHandsShield: boolean = shieldList[shieldIndex].shieldArmorName.includes("両手盾"); // 両手盾が選択されているかどうか
+        let minusRevision: string = showTextWithConditions(`-${twoHandsShieldCount*twoHandsShieldCountMinus}`, (isUseTwoHandsShield && twoHandsShieldCount > 0)); // 両手盾の使用時マイナス補正を計算する
+        const revision: string = minusRevision + showTextWithConditions("+20", enableBigShield); // 両手盾のマイナス補正 + ビッグシールドのプラス補正
+        const isCountStop: string = showTextWithConditions("以降", (twoHandsShieldCount >= twoHandsShieldCountMax)); // 両手盾のマイナス補正がカンストしているかどうか
+        const countView: string = `${(twoHandsShieldCount >= twoHandsShieldCountMax) ? twoHandsShieldCountMax : twoHandsShieldCount+1}回目`// n回目
+        const skillName: string = (isUseTwoHandsShield ? `【両手盾】${showTextWithConditions(`${countView}${isCountStop}`, !isTwoHandsShieldCountLocked)}` : "【盾】") // 技能名
+        const roleMessage: string = `CCB<=({盾技能}${revision})${showTextWithConditions("/2", divide2)} ${skillName}` // 盾技能ロール
+        const messages: string[] = [roleMessage];
+        if(enableBigShield)  messages.push(":ビッグシールド-1");
+        const isMessageChanged: boolean = sendCcfoliaMessage(messages);
+        if(isMessageChanged && isUseTwoHandsShield && !isTwoHandsShieldCountLocked) setTwoHandsShieldCount((prev) => Math.min(prev+1, twoHandsShieldCountMax))
+    }
+
     return (
         <div>
             {visible && (
@@ -346,22 +360,20 @@ export default function App(){
                                             </Button> 
                                             <Button
                                                 className="draggable-disable"
-                                                style={{marginLeft: "0.5rem"}}
                                                 variant="text"
-                                                onClick={()=>{
-                                                    const isUseTwoHandsShield: boolean = shieldList[shieldIndex].shieldArmorName.includes("両手盾"); // 両手盾が選択されているかどうか
-                                                    let minusRevision: string = showTextWithConditions(`-${twoHandsShieldCount*twoHandsShieldCountMinus}`, (isUseTwoHandsShield && twoHandsShieldCount > 0)); // 両手盾の使用時マイナス補正を計算する
-                                                    const revision: string = minusRevision + showTextWithConditions("+20", enableBigShield); // 両手盾のマイナス補正 + ビッグシールドのプラス補正
-                                                    const isCountStop: string = showTextWithConditions("以降", (twoHandsShieldCount >= twoHandsShieldCountMax)); // 両手盾のマイナス補正がカンストしているかどうか
-                                                    const countView: string = `${(twoHandsShieldCount >= twoHandsShieldCountMax) ? twoHandsShieldCountMax : twoHandsShieldCount+1}回目`// n回目
-                                                    const skillName: string = (isUseTwoHandsShield ? `【両手盾】${showTextWithConditions(`${countView}${isCountStop}`, !isTwoHandsShieldCountLocked)}` : "【盾】") // 技能名
-                                                    const roleMessage: string = `CCB<=({盾技能}${revision}) ${skillName}` // 盾技能ロール
-                                                    const messages: string[] = [roleMessage];
-                                                    if(enableBigShield)  messages.push(":ビッグシールド-1");
-                                                    const isMessageChanged: boolean = sendCcfoliaMessage(messages);
-                                                    if(isMessageChanged && isUseTwoHandsShield && !isTwoHandsShieldCountLocked) setTwoHandsShieldCount((prev) => Math.min(prev+1, twoHandsShieldCountMax))
-                                                }}>
+                                                onClick={() => roleShield()}>
                                                     盾技能
+                                            </Button>
+                                            <Button
+                                                className="draggable-disable"
+                                                style={{
+                                                    marginRight: "0.5rem",
+                                                    width: "2rem",
+                                                    minWidth: "2rem"
+                                                }}
+                                                variant="text"
+                                                onClick={() => roleShield(true)}>
+                                                    /2
                                             </Button>
                                         </div>
                                     </div>

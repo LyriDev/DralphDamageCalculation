@@ -31,8 +31,9 @@ export default function SelectSpecialArmor({
         <div>
             <FormControlLabel
                 className="draggable-disable"
+                style={{marginRight: 0}}
                 label={
-                    <div style={{display: "flex"}}>
+                    <div style={{display: "flex", marginRight: 0}}>
                         <span
                             style={{
                                 alignItems: "center",
@@ -41,7 +42,7 @@ export default function SelectSpecialArmor({
                                 overflow:"hidden",
                                 textOverflow: "ellipsis",
                                 textWrap: "nowrap",
-                                userSelect: "none"
+                                userSelect: "none", marginRight: 0
                             }}
                         >
                             特殊装甲

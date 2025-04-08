@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Button, FormControlLabel, Checkbox } from '@mui/material';
+import { Paper, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
 import AddPanelButton from "./AddPanelButton"
 import { sendCcfoliaMessage, sendMessage } from '../utils/sendCcfoliaMessage';
 import StatusLevelChange from "./StatusLevelChange";
 import CalculateButton from "./CalculateButton";
+import ExCalculateButton from "./ExCalculateButton";
 import SelectShield from "./SelectShield";
 import BigShield from "./BigShield";
 import SpecialMagnification from "./SpecialMagnification";
@@ -169,9 +170,10 @@ export default function App(){
     const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
 
     const width: number = 340;
-    const height: number = 97;
+    const height: number = 138.576;
+    const addedHeight: number = 265;
 
-    const [shieldList, setShieldList] = useState<Shield[]>(shields);
+    const [shieldList, _setShieldList] = useState<Shield[]>(shields);
     const [shieldIndex, setShieldIndex] = useState<number>(0);
     const [sliderValue, setSliderValue] = useState<number>(0);
 
@@ -222,12 +224,12 @@ export default function App(){
                     <Draggable
                         defaultPosition={{
                             x: (windowWidth - width) / 2,
-                            y: -(windowHeight + (height + 16 * 3)) / 2
+                            y: -(windowHeight + ((visibleAdditions ? addedHeight : height) + 16 * 3)) / 2
                         }}
                         bounds={{
                             top: -windowHeight,
                             right: (windowWidth - width),
-                            bottom: -(height + 16 * 3),
+                            bottom: -((visibleAdditions ? addedHeight : height) + 16 * 3),
                             left: 0
                         }}
                         cancel=".draggable-disable"
@@ -283,102 +285,124 @@ export default function App(){
                                 />
                             </div>
                             {visibleAdditions && (
-                                <div
-                                    style={{
-                                        marginLeft: "1rem"
-                                    }}
-                                >
+                                <div>
                                     <div
                                         style={{
+                                            flexGrow: 1,
                                             display: "flex",
-                                            flexDirection: "row"
+                                            flexDirection: "row",
+                                            justifyContent: "space-evenly"
                                         }}
                                     >
-                                        <BigShield enableBigShield={enableBigShield} setEnableBigShield={setEnableBigShield}/>
-                                        <div
-                                            style={{
-                                                flexGrow: 1,
-                                                display: "flex",
-                                                justifyContent: "center"
-                                            }}
-                                        >
-                                            <SpecialMagnification multiplier={multiplier} setMultiplier={setMultiplier}/>
-                                        </div>
-                                    </div>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "row"
-                                        }}
-                                    >
-                                        <Wound
-                                            enableWound={enableWound}
-                                            setEnableWound={setEnableWound}
-                                        />
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                flexGrow: 1,
-                                                justifyContent: "end",
-                                                alignItems: "center"
-                                            }}
-                                        >
-                                            <TwoHandsShield
-                                                count={twoHandsShieldCount}
-                                                setCount={setTwoHandsShieldCount}
-                                                isLocked={isTwoHandsShieldCountLocked}
-                                                setIsLocked={setIsTwoHandsShieldCountLocked}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "row"
-                                        }}
-                                    >
-                                        <SelectSpecialArmor
+                                        <ExCalculateButton
                                             enableSpecialArmour={enableSpecialArmour}
-                                            setEnableSpecialArmour={setEnableSpecialArmour}
                                             specialArmors={specialArmors}
-                                            setSpecialArmors={setSpecialArmors}
+                                            enableBigShield={enableBigShield}
+                                            multiplier={multiplier}
+                                            shieldName={shieldList[shieldIndex].shieldName}
+                                            shieldArmourName={shieldList[shieldIndex].shieldArmorName}
+                                            sliderValue={sliderValue}
+                                            enableWound={enableWound}
                                         />
+                                    </div>
+                                    <div
+                                        style={{
+                                            marginLeft: "1rem"
+                                        }}
+                                    >
                                         <div
                                             style={{
                                                 display: "flex",
-                                                flexGrow: 1,
-                                                justifyContent: "center"
+                                                flexDirection: "row"
                                             }}
                                         >
-                                            <Button
-                                                className="draggable-disable"
-                                                variant="text"
-                                                onClick={()=>{
-                                                    sendMessage(":MP-1 【かばう消費MP】");
-                                                }}>
-                                                    かばう+1
-                                            </Button> 
-                                            <Button
-                                                className="draggable-disable"
-                                                variant="text"
-                                                onClick={() => roleShield()}>
-                                                    盾技能
-                                            </Button>
-                                            <Button
-                                                className="draggable-disable"
+                                            <BigShield enableBigShield={enableBigShield} setEnableBigShield={setEnableBigShield}/>
+                                            <div
                                                 style={{
-                                                    marginRight: "0.5rem",
-                                                    width: "2rem",
-                                                    minWidth: "2rem"
+                                                    flexGrow: 1,
+                                                    display: "flex",
+                                                    justifyContent: "center"
                                                 }}
-                                                variant="text"
-                                                onClick={() => roleShield(true)}>
-                                                    /2
-                                            </Button>
+                                            >
+                                                <SpecialMagnification multiplier={multiplier} setMultiplier={setMultiplier}/>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row"
+                                            }}
+                                        >
+                                            <Wound
+                                                enableWound={enableWound}
+                                                setEnableWound={setEnableWound}
+                                            />
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    flexGrow: 1,
+                                                    justifyContent: "end",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                <TwoHandsShield
+                                                    count={twoHandsShieldCount}
+                                                    setCount={setTwoHandsShieldCount}
+                                                    isLocked={isTwoHandsShieldCountLocked}
+                                                    setIsLocked={setIsTwoHandsShieldCountLocked}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             )}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    marginLeft: "1rem"
+                                }}
+                            >
+                                <SelectSpecialArmor
+                                    enableSpecialArmour={enableSpecialArmour}
+                                    setEnableSpecialArmour={setEnableSpecialArmour}
+                                    specialArmors={specialArmors}
+                                    setSpecialArmors={setSpecialArmors}
+                                />
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexGrow: 1,
+                                        justifyContent: "center"
+                                    }}
+                                >
+                                    <Button
+                                        className="draggable-disable"
+                                        variant="text"
+                                        onClick={()=>{
+                                            sendMessage(":MP-1 【かばう消費MP】");
+                                        }}>
+                                            かばう+1
+                                    </Button> 
+                                    <Button
+                                        className="draggable-disable"
+                                        variant="text"
+                                        onClick={() => roleShield()}>
+                                            盾技能
+                                    </Button>
+                                    <Button
+                                        className="draggable-disable"
+                                        style={{
+                                            marginRight: "0.5rem",
+                                            width: "2rem",
+                                            minWidth: "2rem"
+                                        }}
+                                        variant="text"
+                                        onClick={() => roleShield(true)}>
+                                            /2
+                                    </Button>
+                                </div>
+                            </div>
                         </Paper>
                     </Draggable>
                 </ThemeProvider>

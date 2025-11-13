@@ -51,7 +51,6 @@ export default function ExCalculateButton(props: Props){
         if(enableSpecialArmour){
             specialArmors.forEach(data => {
                 if(!data.enable) return;
-                console.log(data.armorName, data.armorName.includes("装甲"), (withoutArmor && data.armorName.includes("装甲")))
                 if(withoutArmor && data.armorName.includes("装甲")) return; // 装甲無視の際は耐性のみ参照
                 result.push(`{${data.armorName}}`);
             })

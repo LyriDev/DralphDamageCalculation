@@ -60,6 +60,10 @@ const specialArmorList = [
         enable: false
     },
     {
+        armorName: "被ダメ軽減",
+        enable: false
+    },
+    {
         armorName: "火耐性",
         enable: false
     },

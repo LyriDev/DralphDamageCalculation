@@ -46,12 +46,12 @@ export default function CalculateButton(props: Props){
     } = props;
 
     // 有効な特殊装甲を取得する関数
-    function getSpecialArmour(){
-        let result: string = "";
+    function getSpecialArmour(): string[]{
+        let result: string[] = [];
         if(enableSpecialArmour){
             specialArmors.forEach(data => {
                 if(!data.enable) return;
-                result += `+{${data.armorName}}`
+                result.push(`{${data.armorName}}`);
             })
         }
         return result;
@@ -81,15 +81,23 @@ export default function CalculateButton(props: Props){
         if((isNaN(Number(damage)) || (damage === "") || (damage === null))) return;
 
         // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
+        const armors: string[] = ["{装甲}"];
+        let rollText: string = "";
         if(useShield){
+            // 盾使用
             const shieldArmor: string = enableBigShield ? `({${shieldArmourName}}*13/10R)` : `{${shieldArmourName}}`;
-            role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}+${shieldArmor}${getSpecialArmour()})) 【盾ガード時被ダメージ】`;
-            decrementParams.push("HP");
+            armors.push(shieldArmor);
+            armors.push(...getSpecialArmour());
+            rollText = "盾ガード時被ダメージ";
             decrementParams.push(shieldName);
         }else{
-            role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-({装甲}${getSpecialArmour()})) 【被ダメージ】`;
-            decrementParams.push("HP");
+            // 盾失敗
+            armors.push(...getSpecialArmour());
+            rollText = "被ダメージ";
         }
+        const armorsStr: string = armors.join("+");
+        role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-(${armorsStr})) 【${rollText}】`;
+        decrementParams.push("HP");
 
         // ダメージを計算するロールを行い、その結果を元にパラメータを減少させるロールを行う
         decrementParamsWithResult(role, decrementParams, enableWound);

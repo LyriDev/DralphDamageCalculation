@@ -46,14 +46,13 @@ export default function ExCalculateButton(props: Props){
     } = props;
 
     // 有効な特殊装甲を取得する関数
-    function getSpecialArmour(withoutArmor: boolean = false){
-        let result: string = "";
+    function getSpecialArmour(withoutArmor: boolean = false): string[]{
+        let result: string[] = [];
         if(enableSpecialArmour){
             specialArmors.forEach(data => {
                 if(!data.enable) return;
-                console.log(data.armorName, data.armorName.includes("装甲"), (withoutArmor && data.armorName.includes("装甲")))
                 if(withoutArmor && data.armorName.includes("装甲")) return; // 装甲無視の際は耐性のみ参照
-                result += `+{${data.armorName}}`
+                result.push(`{${data.armorName}}`);
             })
         }
         return result;
@@ -80,13 +79,16 @@ export default function ExCalculateButton(props: Props){
 
         // ユーザーが入力したダメージを元に計算を行うロールの文字列を作成する
         if(type === "withoutArmor"){
+            // 装甲無視+盾装甲無視(盾の秘伝書)
             const shieldArmor: string = enableBigShield ? `({${shieldArmourName}}*13/10R)` : `{${shieldArmourName}}`;
-            role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-(${shieldArmor}${getSpecialArmour(true)})) 【盾ガード時被ダメージ(装甲無視)】盾の秘伝書「心」`;
+            const armorsStr: string = [shieldArmor, ...getSpecialArmour(true)].join("+");
+            role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)-(${armorsStr})) 【盾ガード時被ダメージ(装甲無視)】盾の秘伝書「心」`;
             decrementParams.push("HP");
             decrementParams.push(shieldName);
         }else{
-            const specialArmor: string = getSpecialArmour(true);
-            const specialArmorStr: string = (specialArmor) ? `-(${specialArmor})` : "";
+            // 装甲無視だけど盾は使用
+            const specialArmor: string[] = getSpecialArmour(true);
+            const specialArmorStr: string = (specialArmor.length > 0) ? `-(${specialArmor.join("+")})` : "";
             role = `C(((${damage})*${reductionRate * 100}${(additionalRate === 100) ? "/100" : `*${additionalRate}/10000`}R)${specialArmorStr}) 【被ダメージ(装甲無視)】`;
             decrementParams.push("HP");
             decrementParams.push(shieldName);

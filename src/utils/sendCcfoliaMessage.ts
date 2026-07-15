@@ -55,4 +55,5 @@ export function sendCcfoliaMessage(messages: string[]): boolean{
         }
         return !isChangedMessage
     }
+    return false;
 }

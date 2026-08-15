@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
-import AddPanelButton from "./AddPanelButton"
+import AddPanelButton from "./DefensePanel/AddPanelButton"
 import { sendCcfoliaMessage, sendMessage } from '../utils/sendCcfoliaMessage';
-import StatusLevelChange from "./StatusLevelChange";
-import CalculateButton from "./CalculateButton";
-import ExCalculateButton from "./ExCalculateButton";
-import SelectShield from "./SelectShield";
-import BigShield from "./BigShield";
-import SpecialMagnification from "./SpecialMagnification";
-import SelectSpecialArmor from "./SelectSpecialArmor"
-import Wound from "./Wound"
+import StatusLevelChange from "./DefensePanel/StatusLevelChange";
+import CalculateButton from "./DefensePanel/CalculateButton";
+import ExCalculateButton from "./DefensePanel/ExCalculateButton";
+import SelectShield from "./DefensePanel/SelectShield";
+import BigShield from "./DefensePanel/BigShield";
+import SpecialMagnification from "./DefensePanel/SpecialMagnification";
+import SelectSpecialArmor from "./DefensePanel/SelectSpecialArmor"
+import Wound from "./DefensePanel/Wound"
 import { SpecialArmor, Shield } from "./../utils/types";
-import TwoHandsShield from "./TwoHandsShield"
+import TwoHandsShield from "./DefensePanel/TwoHandsShield"
 
 const shields = [
     {

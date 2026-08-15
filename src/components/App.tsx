@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
 import Header from "./Header";
 import DefensePanel from "./DefensePanel/DefensePanel";
+import EditModal from "./EditModal/EditModal";
 
 const theme = createTheme({
     palette: {
@@ -88,6 +89,7 @@ const theme = createTheme({
 
 export default function App(){
     const [visible, setVisible] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
     const [windowHeight, setWindowHeight] = useState<number>(window.innerHeight);
@@ -117,7 +119,7 @@ export default function App(){
     }, []);
 
     return (
-        <div>
+        <>
             {visible && (
                 <ThemeProvider theme={theme}>
                     <Draggable
@@ -145,7 +147,7 @@ export default function App(){
                             }}
                             elevation={10}
                         >
-                            <Header/>
+                            <Header setIsModalOpen={setIsModalOpen}/>
                             <div
                                 style={{
                                     padding: "1rem"
@@ -157,6 +159,15 @@ export default function App(){
                     </Draggable>
                 </ThemeProvider>
             )}
-        </div>
+            <EditModal
+                theme={theme}
+                isOpen={isModalOpen}
+                closeModal={() => {
+                    // saveData();
+                    setIsModalOpen(false);
+                    // setEditTabIndex(0);
+                }}
+            />
+        </>
     );
 };

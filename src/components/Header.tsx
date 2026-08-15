@@ -6,12 +6,12 @@ import EditIcon from '@mui/icons-material/Edit';
 // import { DataContext } from "./DataProvider";
 
 type Props = {
-    // setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // 編集ボタンがあるヘッダー
 export default function Header(props: Props){
-    // const { setIsModalOpen } = props;
+    const { setIsModalOpen } = props;
     // const {
     //     tabIndex,
     //     setTabIndex,
@@ -33,7 +33,7 @@ export default function Header(props: Props){
                 <IconButton
                     className="draggable-disable"
                     color="primary"
-                    // onClick={() => setIsModalOpen(true)}
+                    onClick={() => setIsModalOpen(true)}
                 >
                     <EditIcon/>
                 </IconButton>

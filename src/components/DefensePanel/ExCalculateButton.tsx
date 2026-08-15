@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import { decrementParamsWithResult } from "./../utils/rollDiceFromResult"
-import { SpecialArmor } from "./../utils/types";
+import { decrementParamsWithResult } from "../../utils/rollDiceFromResult"
+import { SpecialArmor } from "../../utils/types";
 
 type Props = {
     enableSpecialArmour: boolean;

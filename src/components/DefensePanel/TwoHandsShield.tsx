@@ -4,7 +4,7 @@ import { IconButton } from '@mui/material';
 import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { twoHandsShieldCountMax } from './App';
+import { twoHandsShieldCountMax } from '../App';
 
 type Props = {
     count: number;

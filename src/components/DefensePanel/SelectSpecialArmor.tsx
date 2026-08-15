@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormControlLabel, Checkbox, IconButton, Menu, MenuItem } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { SpecialArmor } from "./../utils/types";
+import { SpecialArmor } from "../../utils/types";
 
 type Props = {
     enableSpecialArmour: boolean;

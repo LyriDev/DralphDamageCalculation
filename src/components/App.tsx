@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Paper } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Draggable from 'react-draggable';
+import Header from "./Header";
 import DefensePanel from "./DefensePanel/DefensePanel";
 
 const theme = createTheme({
@@ -96,12 +97,12 @@ export default function App(){
                     <Draggable
                         defaultPosition={{
                             x: (windowWidth - width) / 2,
-                            y: -(windowHeight + (height + 16 * 3)) / 2
+                            y: -(windowHeight + height) / 2
                         }}
                         bounds={{
                             top: -windowHeight,
                             right: (windowWidth - width),
-                            bottom: -(height + 16 * 3),
+                            bottom: -height,
                             left: 0
                         }}
                         cancel=".draggable-disable"
@@ -114,13 +115,18 @@ export default function App(){
                                 borderRadius: "0",
                                 minWidth: `${width}px`,
                                 minHeight: `${height}px`,
-                                paddingTop: "16px",
-                                paddingBottom: "32px",
                                 userSelect: "none"
                             }}
                             elevation={10}
                         >
-                            <DefensePanel/>
+                            <Header/>
+                            <div
+                                style={{
+                                    padding: "1rem"
+                                }}
+                            >
+                                <DefensePanel/>
+                            </div>
                         </Paper>
                     </Draggable>
                 </ThemeProvider>

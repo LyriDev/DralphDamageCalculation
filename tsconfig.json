@@ -5,7 +5,7 @@
     "module": "es6",
     "target": "es2020",
     "allowJs": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "moduleResolution": "bundler"
   },
   "files": ["src/index.tsx"]

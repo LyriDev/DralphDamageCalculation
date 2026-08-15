@@ -7,57 +7,83 @@ import DefensePanel from "./DefensePanel/DefensePanel";
 
 const theme = createTheme({
     palette: {
-        primary: {
-            main: "#fff" // プライマリーカラーを白色に設定
-        },
-        secondary: {
-            main: "rgba(0,0,0,0)" // セカンダリーカラーを無色に設定
-        },
+        primary: { main: "#fff",  },
+        secondary: { main: "rgba(0,0,0,0)" },
+        info: { main: "rgb(33, 150, 243)" },
+        action: {
+            disabled: "gray"
+        }
     },
-    typography: {
-        button: {
-            textTransform: "none",
-            fontWeight: 'bold'
-        },
-    },
+    typography: { button: { textTransform: "none", fontWeight: 'bold' } },
     components: {
-        MuiRadio: {
+        MuiRadio: { styleOverrides: { root: { color: 'white' } } },
+        MuiSlider: { styleOverrides: { markLabel: { color: 'white' } } },
+        MuiCheckbox: { styleOverrides: { root: { color: 'white' } } },
+        MuiPaper: {
             styleOverrides: {
                 root: {
-                    color: 'white', // 非アクティブ時のカラーを白に設定
-                },
-            },
-        },
-        MuiSlider: {
-            styleOverrides: {
-                markLabel: {
-                    color: 'white', // カスタムテキストカラーを指定
-                },
-            },
-        },
-        MuiCheckbox: {
-            styleOverrides: {
-                root: {
-                    color: 'white', // 非アクティブ時のカラーを白に設定
-                },
-            },
+                    color: "#fff",
+                    backgroundColor: "rgba(44, 44, 44, 0.87)"
+                }
+            }
         },
         MuiTextField: {
             styleOverrides: {
                 root: {
-                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                        borderBottomColor: 'white', // 下線の色を白色に設定
-                    },
-                    '& .MuiInput-underline:before': {
-                      borderBottomColor: 'white', // 下線の色を白色に設定
-                    },
-                    '& .MuiInput-input': {
-                      color: 'white' // フォームの文字色を白色に設定
-                    }
+                    // color: "lightgray",
+                    '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottomColor: 'white' },
+                    '& .MuiInput-underline:before': { borderBottomColor: 'white' },
+                    '& .MuiInput-input': { color: 'white' }
                 }
             }
-        }
-    },
+        },
+        MuiInputLabel: {
+            styleOverrides: {
+                root: {
+                    color: "gray", // フォーカスされてない時のラベル
+                    "&.Mui-focused.MuiInputLabel-shrink": { color: "rgb(33, 150, 243)" }, // shrink時
+                },
+            },
+        },
+        MuiInput: {
+            styleOverrides: {
+                input: {
+                    color: "lightgray", // 入力文字色
+                    "&::placeholder": {
+                        color: "darkgray", // placeholder
+                        opacity: 1,
+                    },
+                },
+                underline: {
+                    "&:before": { borderBottomColor: "gray" }, // 未フォーカス時の下線
+                    "&:hover:not(.Mui-disabled):before": { borderBottomColor: "white" }, // hover時
+                    "&:after": { borderBottomColor: "rgb(33, 150, 243)" }, // フォーカス時
+                },
+            },
+        },
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    color: "#bdbdbd", // 非アクティブなタブの文字色を指定
+                },
+            },
+        },
+        MuiTabs: {
+            styleOverrides: {
+                indicator: {
+                    backgroundColor: "#f50057", // 下線の色を赤に設定
+                }
+            }
+        },
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    color: "#fff",
+                    backgroundColor: "rgba(44, 44, 44, 0.87)" // Menuコンポーネントの背景色を設定
+                }
+            },
+        },
+    }
 });
 
 export default function App(){

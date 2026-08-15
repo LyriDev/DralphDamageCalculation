@@ -1,6 +1,4 @@
 node_modules
 .vscode
 dist/
-!dist/image/
-!dist/manifest.json
 dist.zip

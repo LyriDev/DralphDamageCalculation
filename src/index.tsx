@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from "./components/App"
+import App from "./components/App";
+import { DataProvider } from './DataProvider';
 
 function addPortalRoot(): HTMLDivElement{ // ポータルを追加するためのルート要素を作成する関数
     // ポータルを追加するためのルート要素を作成
@@ -16,7 +17,9 @@ async function renderApp(portal: HTMLDivElement): Promise<void>{ // ポータル
     // 「マイキャラクター一覧」の要素の前に拡張チャットパレットボタンを追加する
     ReactDOM.render(
         <React.StrictMode>
-            <App/>
+            <DataProvider>
+                <App/>
+            </DataProvider>
         </React.StrictMode>,
         portal
     );

@@ -6,7 +6,8 @@
     "target": "es2020",
     "allowJs": true,
     "jsx": "react-jsx",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["chrome"]
   },
-  "files": ["src/index.tsx"]
+  "include": ["src/**/*"]
 }

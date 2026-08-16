@@ -8,7 +8,7 @@ export type SpecialArmor = {
     enable: boolean;
 };
 
-type HitData = {
+type GuardData = {
     characterName: string | null;
 }
 
@@ -17,6 +17,17 @@ type RideData = {
     horseName: string | null;
 }
 
-export type TabData = 
-| { enabled: boolean; type: "Hit"; data: HitData }
-| { enabled: boolean; type: "Ride"; data: RideData };
+export type TabDataType = GuardData | RideData;
+
+export type TabDataMap = {
+    Guard: GuardData;
+    Ride: RideData;
+};
+
+export type TabData = {
+    [K in keyof TabDataMap]: {
+        enabled: boolean;
+        type: K;
+        data: TabDataMap[K];
+    }
+}[keyof TabDataMap];

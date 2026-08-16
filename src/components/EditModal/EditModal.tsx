@@ -1,7 +1,8 @@
-import { Box, Modal, Paper, Theme, ThemeProvider } from "@mui/material";
-import TabContent from "../ui/TabContent";
+import { Box, Button, Modal, Paper, Theme, ThemeProvider } from "@mui/material";
 import EditHeader from "./EditHeader";
-import EditTabs from "./EditTabs";
+import { useContext } from "react";
+import { DataContext } from "../../DataProvider";
+import EditTab from "./EditTab";
 
 type Props = {
     theme: Theme;
@@ -15,6 +16,11 @@ export default function EditModal(props: Props){
         isOpen,
         closeModal
     } = props;
+
+    const {
+        tabs, setTabs,
+        addTab
+    } = useContext(DataContext);
 
     return (
         <Modal
@@ -41,23 +47,22 @@ export default function EditModal(props: Props){
                 >
                     <Paper elevation={4} sx={{ backgroundColor: "#212121" }}>
                         <EditHeader closeModal={closeModal}/>
-                        <EditTabs/>
                     </Paper>
                     <Box
                         sx={{
                             p: 3,
                             flex: 1,
-                            overflowY: "auto"
+                            overflowY: "auto",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1
                         }}>
+                            <Box>
+                                <Button onClick={addTab}>追加</Button>
+                            </Box>
                         {
-                            ([]).map((_armor, index) => (
-                                <TabContent
-                                    key={index}
-                                    value={0}
-                                    index={0}
-                                >
-                                    <></>
-                                </TabContent>
+                            (tabs).map((_tab, index) => (
+                                <EditTab key={index} index={index}/>
                             )
                         )}
                     </Box>

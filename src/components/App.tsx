@@ -84,6 +84,25 @@ const theme = createTheme({
                 }
             },
         },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    color: "white", // 入力文字を白に
+                    "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(166, 166, 166)", // 通常時の枠線を灰色に
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "white", // ホバー時の枠線も白に
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(33, 150, 243)", // フォーカス時（shrink時）は青に
+                    },
+                    "& .MuiSelect-icon": {
+                        color: "white",
+                    }
+                }
+            }
+        }
     }
 });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import NumericField from "./NumericField"
+import NumberFieldLabel from '../ui/NumberFieldLabel';
 
 type Props = {
     multiplier: string;
@@ -8,14 +8,13 @@ type Props = {
 
 export default function SpecialMagnification({multiplier, setMultiplier}: Props){
     return (
-        <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
-            <span>補助倍率:&nbsp;</span>
-            <NumericField
-                state={multiplier}
-                setState={setMultiplier}
-                style={{width: "3rem"}}
-            />
-            <span>%</span>
-        </div>
+        <NumberFieldLabel
+            label="補助倍率"
+            additionalLabel="%"
+            value={multiplier}
+            setValue={(value) => setMultiplier(value)}
+            min={0}
+            max={999}
+        />
     );
 };

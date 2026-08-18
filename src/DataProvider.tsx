@@ -11,6 +11,8 @@ type ContextType = {
     setTabType(index: number, newType: keyof TabDataMap): void;
     setCharacterName(index: number, value: string): void;
     toggleCharacterName(index: number): void;
+    setHorseName(index: number, value: string): void;
+    setDexBoost(index: number, value: string): void;
 };
 
 export const DataContext = createContext<ContextType>({} as ContextType);
@@ -26,7 +28,9 @@ export function DataProvider({children}: {children: React.ReactNode}){
                 {
                     enabled: true,
                     type: "Guard",
-                    data: { characterName: "" }
+                    data: { 
+                        character: { name: "" }
+                    }
                 }
             ];
             return newTabs;
@@ -49,12 +53,20 @@ export function DataProvider({children}: {children: React.ReactNode}){
     }
 
     function createDefaultData<T extends keyof TabDataMap>(type: T, currentData: TabDataType): TabDataMap[T] {
-        const baseCharacterName = currentData.characterName ?? "";
+        const baseCharacterName = currentData.character.name ?? "";
         switch (type) {
             case "Guard":
-                return { characterName: baseCharacterName } as TabDataMap[T];;
+                return {
+                    character: { name: baseCharacterName }
+                } as TabDataMap[T];;
             case "Ride":
-                return { characterName: baseCharacterName, horseName: "" } as TabDataMap[T];;
+                return {
+                    character: { name: baseCharacterName },
+                    horse: {
+                        name: "",
+                        dexBoost: "5"
+                    }
+                } as TabDataMap[T];;
             default:
                 throw new Error(`Unknown type: ${type}`);
         }
@@ -83,7 +95,10 @@ export function DataProvider({children}: {children: React.ReactNode}){
                     ...tab,
                     data: {
                         ...tab.data,
-                        characterName: value
+                        character: {
+                            ...tab.data.character,
+                            name: value
+                        }
                     }
                 } as TabData;
             });
@@ -91,16 +106,67 @@ export function DataProvider({children}: {children: React.ReactNode}){
     }
 
     function toggleCharacterName(index: number){
+        if(tabs[index].type !== "Guard") return;
+
         setTabs(tabs => {
-            const newValue = (tabs[index].data.characterName === null) ? "" : null;
+            const newValue = (tabs[index].data.character.name === null) ? "" : null;
 
             return tabs.map((tab, i) => {
                 if (i !== index) return tab;
+                if(tab.type !== "Guard") return tab; // 型チェック用
+
                 return {
                     ...tab,
                     data: {
                         ...tab.data,
-                        characterName: newValue
+                        character: {
+                            ...tab.data.character,
+                            name: newValue
+                        }
+                    }
+                } as TabData;
+            });
+        });
+    }
+
+    function setHorseName(index: number, value: string){
+        if(tabs[index].type !== "Ride") return;
+
+        setTabs(tabs => {
+            return tabs.map((tab, i) => {
+                if (i !== index) return tab;
+                if(tab.type !== "Ride") return tab; // 型チェック用
+
+                return {
+                    ...tab,
+                    data: {
+                        ...tab.data,
+                        horse: {
+                            ...tab.data.horse,
+                            name: value
+                        }
+                    }
+                } as TabData;
+            });
+        });
+    }
+
+    function setDexBoost(index: number, value: string){
+        if(tabs[index].type !== "Ride") return;
+
+        setTabs(tabs => {
+            return tabs.map((tab, i) => {
+                if (i !== index) return tab;
+                if(tab.type !== "Ride") return tab; // 型チェック用
+
+                return {
+                    ...tab,
+                    data: {
+                        ...tab.data,
+                        horse: {
+                            ...tab.data.horse,
+                            dexBoost: value
+                        }
                     }
                 } as TabData;
             });
@@ -116,7 +182,9 @@ export function DataProvider({children}: {children: React.ReactNode}){
                 toggleTabEnabled,
                 setTabType,
                 setCharacterName,
-                toggleCharacterName
+                toggleCharacterName,
+                setHorseName,
+                setDexBoost
             }}
         >
             {children}

@@ -9,12 +9,19 @@ export type SpecialArmor = {
 };
 
 type GuardData = {
-    characterName: string | null;
+    character: {
+        name: string | null;
+    }
 }
 
 type RideData = {
-    characterName: string | null;
-    horseName: string | null;
+    character: {
+        name: string;
+    },
+    horse: {
+        name: string,
+        dexBoost: string
+    }
 }
 
 export type TabDataType = GuardData | RideData;

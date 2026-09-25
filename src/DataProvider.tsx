@@ -7,6 +7,8 @@ type ContextType = {
     tabs: TabData[];
     setTabs: React.Dispatch<React.SetStateAction<TabData[]>>;
     addTab(): void;
+    removeTab(index: number): void;
+    swapTab(index1: number, index2: number): void;
     toggleTabEnabled(index: number): void;
     setTabType(index: number, newType: keyof TabDataMap): void;
     setCharacterName(index: number, value: string): void;
@@ -34,6 +36,46 @@ export function DataProvider({children}: {children: React.ReactNode}){
                 }
             ];
             return newTabs;
+        });
+    }
+
+    function removeTab(index: number) {
+        setTabs(prevTabs => prevTabs.filter((_, i) => i !== index));
+
+        // 削除に伴う tabIndex の補正
+        setTabIndex(prevIndex => {
+            if (prevIndex === index) {
+                // 現在選択中のタブを消す場合：なるべく同じインデックス（末尾だった場合は1つ前）を選択
+                return Math.max(0, index - 1);
+            } else if (prevIndex > index) {
+                // 選択中より前のタブを消す場合：インデックスを1つ繰り上げる
+                return prevIndex - 1;
+            }
+            return prevIndex;
+        });
+    }
+
+    function swapTab(index1: number, index2: number) {
+        setTabs(prevTabs => {
+            if (
+                index1 < 0 || index1 >= prevTabs.length ||
+                index2 < 0 || index2 >= prevTabs.length
+            ) {
+                return prevTabs;
+            }
+
+            const newTabs = [...prevTabs];
+            const temp = newTabs[index1];
+            newTabs[index1] = newTabs[index2];
+            newTabs[index2] = temp;
+            return newTabs;
+        });
+
+        // ドラッグ＆ドロップ等でアクティブタブの位置が変わる場合のフォロー
+        setTabIndex(prevIndex => {
+            if (prevIndex === index1) return index2;
+            if (prevIndex === index2) return index1;
+            return prevIndex;
         });
     }
 
@@ -179,6 +221,8 @@ export function DataProvider({children}: {children: React.ReactNode}){
                 tabIndex, setTabIndex,
                 tabs, setTabs,
                 addTab,
+                removeTab,
+                swapTab,
                 toggleTabEnabled,
                 setTabType,
                 setCharacterName,

@@ -102,6 +102,16 @@ const theme = createTheme({
                     }
                 }
             }
+        },
+        MuiIconButton: {
+            styleOverrides: {
+                root: {
+                    color: "#fff", // 通常時のアイコン色を白に
+                    "&.Mui-disabled": {
+                        // color: "rgba(255, 255, 255, 0.3)" // disabled時の色
+                    }
+                }
+            }
         }
     }
 });

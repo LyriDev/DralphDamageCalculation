@@ -94,7 +94,9 @@ export default function EditTab({index}: {index: number}){
                     </IconButton>
                     <Button
                         disabled={tabs.length <= 1}
-                        onClick={() => {removeTab(index)}}
+                        onClick={() => {
+                            if (window.confirm("本当に削除しますか？")) removeTab(index);
+                        }}
                     >
                         削除
                     </Button>

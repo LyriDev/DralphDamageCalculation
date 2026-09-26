@@ -19,21 +19,23 @@ type ContextType = {
 
 export const DataContext = createContext<ContextType>({} as ContextType);
 
+const newTab: TabData = {
+    enabled: true,
+    type: "Guard",
+    data: { 
+        character: { name: "" }
+    }
+};
+
 export function DataProvider({children}: {children: React.ReactNode}){
     const [tabIndex, setTabIndex] = useState<number>(0);
-    const [tabs, setTabs] = useState<TabData[]>([]);
+    const [tabs, setTabs] = useState<TabData[]>([newTab]);
 
     function addTab(){
         setTabs(tabs => {
             const newTabs: TabData[] = [
                 ...tabs,
-                {
-                    enabled: true,
-                    type: "Guard",
-                    data: { 
-                        character: { name: "" }
-                    }
-                }
+                structuredClone(newTab)
             ];
             return newTabs;
         });

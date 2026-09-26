@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { TabData, TabDataMap, TabDataType } from "./utils/types";
 
 type ContextType = {
@@ -95,6 +95,45 @@ export function DataProvider({children}: {children: React.ReactNode}){
             return newTabs;
         });
     }
+
+    // 次の有効なタブへフォーカスを移動する
+    function focusNextTab(){
+        setTabIndex(prev => {
+            // 現在位置より後ろにある有効なタブを探す
+            const nextIndex = tabs.findIndex((tab, i) => i > prev && tab.enabled);
+            if (nextIndex !== -1) return nextIndex;
+
+            // 後ろになければ先頭から探す（ループする場合）
+            const loopIndex = tabs.findIndex(tab => tab.enabled);
+            return loopIndex !== -1 ? loopIndex : prev;
+        });
+    };
+
+    // 前の有効なタブへフォーカスを移動する
+    function focusPrevTab(){
+        setTabIndex(prev => {
+            // 現在位置より前にある有効なタブを逆順に探す
+            for (let i = prev - 1; i >= 0; i--) {
+                if (tabs[i].enabled) return i;
+            }
+            // 前になければ末尾から探す
+            for (let i = tabs.length - 1; i > prev; i--) {
+                if (tabs[i].enabled) return i;
+            }
+            return prev;
+        });
+    };
+
+    // 表示中のタブが非有効化（enabled: false）された場合の安全柵（useEffect）
+    useEffect(() => {
+        // 現在フォーカスしているタブが無効化された場合、隣の有効なタブにずらす
+        if (tabs[tabIndex] && !tabs[tabIndex].enabled) {
+            const nextEnabled = tabs.findIndex(tab => tab.enabled);
+            if (nextEnabled !== -1) {
+                setTabIndex(nextEnabled);
+            }
+        }
+    }, [tabs, tabIndex]);
 
     function createDefaultData<T extends keyof TabDataMap>(type: T, currentData: TabDataType): TabDataMap[T] {
         const baseCharacterName = currentData.character.name ?? "";

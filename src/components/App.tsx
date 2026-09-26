@@ -170,7 +170,7 @@ export default function App(){
                                 color: "#fff",
                                 backgroundColor: 'rgba(44, 44, 44, 0.87)',
                                 borderRadius: "0",
-                                minWidth: `${width}px`,
+                                width: `${width}px`,
                                 minHeight: `${height}px`,
                                 userSelect: "none"
                             }}

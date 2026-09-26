@@ -10,6 +10,8 @@ type ContextType = {
     removeTab(index: number): void;
     swapTab(index1: number, index2: number): void;
     toggleTabEnabled(index: number): void;
+    focusNextTab(): void;
+    focusPrevTab(): void;
     setTabType(index: number, newType: keyof TabDataMap): void;
     setCharacterName(index: number, value: string): void;
     toggleCharacterName(index: number): void;
@@ -102,10 +104,7 @@ export function DataProvider({children}: {children: React.ReactNode}){
             // 現在位置より後ろにある有効なタブを探す
             const nextIndex = tabs.findIndex((tab, i) => i > prev && tab.enabled);
             if (nextIndex !== -1) return nextIndex;
-
-            // 後ろになければ先頭から探す（ループする場合）
-            const loopIndex = tabs.findIndex(tab => tab.enabled);
-            return loopIndex !== -1 ? loopIndex : prev;
+            return prev;
         });
     };
 
@@ -114,10 +113,6 @@ export function DataProvider({children}: {children: React.ReactNode}){
         setTabIndex(prev => {
             // 現在位置より前にある有効なタブを逆順に探す
             for (let i = prev - 1; i >= 0; i--) {
-                if (tabs[i].enabled) return i;
-            }
-            // 前になければ末尾から探す
-            for (let i = tabs.length - 1; i > prev; i--) {
                 if (tabs[i].enabled) return i;
             }
             return prev;
@@ -265,6 +260,8 @@ export function DataProvider({children}: {children: React.ReactNode}){
                 removeTab,
                 swapTab,
                 toggleTabEnabled,
+                focusNextTab,
+                focusPrevTab,
                 setTabType,
                 setCharacterName,
                 toggleCharacterName,

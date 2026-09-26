@@ -2,8 +2,8 @@ import { Box, IconButton, Tab, Tabs } from "@mui/material";
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import EditIcon from '@mui/icons-material/Edit';
-// import { useContext } from "react";
-// import { DataContext } from "./DataProvider";
+import { useContext } from "react";
+import { DataContext } from "../DataProvider";
 
 type Props = {
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,11 +12,17 @@ type Props = {
 // 編集ボタンがあるヘッダー
 export default function Header(props: Props){
     const { setIsModalOpen } = props;
-    // const {
-    //     tabIndex,
-    //     setTabIndex,
-    //     data
-    // } = useContext(DataContext);
+    const {
+        tabIndex,
+        setTabIndex,
+        tabs,
+        focusNextTab,
+        focusPrevTab
+    } = useContext(DataContext);
+
+    // ボタンの disabled 判定（現在の tabIndex より前/後に enabled なタブがあるか）
+    const hasPrevEnabled = tabs.some((tab, i) => i < tabIndex && tab.enabled);
+    const hasNextEnabled = tabs.some((tab, i) => i > tabIndex && tab.enabled);
 
     return (
         <Box sx={{boxShadow: 4}}>
@@ -48,27 +54,46 @@ export default function Header(props: Props){
             >
                 <IconButton
                     color="primary"
-                    // disabled={tabIndex === 0}
-                    onClick={() => {
-                        // if(tabIndex > 0) setTabIndex(prev => prev - 1);
-                    }}
+                    disabled={!hasPrevEnabled}
+                    onClick={focusPrevTab}
                 >
                     <KeyboardArrowLeftIcon/>
                 </IconButton>
                 <Tabs
                     style={{flexGrow: 1}}
-                    value={0}
-                    // value={tabIndex}
-                    // onChange={(_, newValue) => setTabIndex(newValue)}
+                    value={tabIndex}
+                    onChange={(_, newValue) => setTabIndex(newValue)}
                 >
-                    <Tab label="hoge"/>
+                    {tabs
+                        // 元の物理インデックス (originalIndex) をオブジェクトに保持させてから filter
+                        .map((tab, originalIndex) => ({ tab, originalIndex }))
+                        .filter(({ tab }) => tab.enabled)
+                        .map(({ tab, originalIndex }) => {
+                            const label = tab.type === "Ride" 
+                                ? (tab.data.horse.name || "乗馬タブ")
+                                : (tab.data.character.name || "盾タブ");
+                            return (
+                                <Tab
+                                    key={originalIndex}
+                                    value={originalIndex} // 元の物理インデックスを指定
+                                    label={label}
+                                    sx={{
+                                        px: "12px",
+                                        py: "6px",
+                                        minWidth: "3rem",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block"
+                                    }}
+                                />
+                            );
+                        })}
                 </Tabs>
                 <IconButton
                     color="primary"
-                    // disabled={tabIndex === 3}
-                    onClick={() => {
-                        // if(tabIndex < 3) setTabIndex(prev => prev + 1);
-                    }}
+                    disabled={!hasNextEnabled}
+                    onClick={focusNextTab}
                 >
                     <KeyboardArrowRightIcon/>
                 </IconButton>
